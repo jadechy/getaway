@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui',
-    'nuxt-vuefire'
+    'nuxt-vuefire',
+    "@pinia/nuxt"
   ],
 
   vuefire: {
