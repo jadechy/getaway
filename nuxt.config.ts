@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { MyPreset } from "./themes/mytheme";
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
@@ -8,7 +10,26 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "nuxt-vuefire",
     "@pinia/nuxt",
+    "@primevue/nuxt-module",
   ],
+  app: {
+    head: {
+      link: [
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Roboto&display=swap",
+        },
+      ],
+    },
+  },
+  primevue: {
+    options: {
+      theme: {
+        preset: MyPreset,
+      },
+    },
+  },
+  css: ["~/assets/css/main.css"],
 
   vuefire: {
     config: {
@@ -24,5 +45,10 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+
+  components: [
+    { path: "~/components", pathPrefix: false },
+    { path: "~/components/ui_kit", pathPrefix: false },
+  ],
   typescript: { strict: true },
 });
