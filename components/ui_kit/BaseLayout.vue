@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Image } from "primevue";
 import Logo from "../assets/img/logo.svg?component";
 const router = useRouter();
 </script>
@@ -8,11 +7,21 @@ const router = useRouter();
   <header>
     <nav>
       <Button asChild v-slot="slotProps" variant="link">
-        <RouterLink to="/my-journeys" :class="slotProps.class"
-          >Ma journée</RouterLink
+        <RouterLink to="/journey/generate" :class="slotProps.class"
+          >Nouvelle sortie</RouterLink
+        >
+      </Button>
+      <Button asChild v-slot="slotProps" variant="link">
+        <RouterLink to="/journey/generate" :class="slotProps.class"
+          >Sortie précédente</RouterLink
         >
       </Button>
       <Logo class="logo" @click="router.push('/')" />
+      <Button asChild v-slot="slotProps" variant="link">
+        <RouterLink to="/journey/all" :class="slotProps.class"
+          >Mes sorties</RouterLink
+        >
+      </Button>
       <Button asChild v-slot="slotProps" variant="link">
         <RouterLink to="/profile" :class="slotProps.class">Profile</RouterLink>
       </Button>
