@@ -1,7 +1,7 @@
-import type { ActivityType } from "./activity";
+import type { ActivityType } from "./journey";
 
 export interface createJourneyAnswers {
-  userId: string,
+  userId: string;
 
   journeyName: string;
   journeyDate: Date;
@@ -21,12 +21,11 @@ export interface createJourneyAnswers {
 }
 
 export type Answer = {
-    id: string | null,
-    sortieId: string | null,
-    activities: string[];
-    activityPriceRange: number[],
-    restaurant: string[];
-    restoPriceRange: number[],
-    isowner: boolean
+  id: string | null;
+  sortieId: string | null;
+  activities: string[];
+  activityPriceRange: number[];
+  restaurant: string[];
+  restoPriceRange: number[];
+  isowner: boolean;
 };
-

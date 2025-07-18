@@ -1,7 +1,233 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRoute } from "vue-router";
+import { ref, computed, onMounted } from "vue";
+import { useJourney } from "~/composables/useJourney";
+import type { JourneyData } from "~/types/activity";
+import { getTypeIconAndColor } from "~/utils/activityType";
+import { Badge, Tag } from "primevue";
+
+const route = useRoute();
+const { fetchJourneyById } = useJourney();
+
+const journeyData = ref<JourneyData | null>(null);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+onMounted(async () => {
+  try {
+    const id = route.params.id as string;
+    journeyData.value = await fetchJourneyById({ journeyId: id });
+    if (!journeyData.value) error.value = "Aucune sortie trouvée.";
+  } catch (e) {
+    error.value = "Erreur lors du chargement.";
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+});
+
+const typeInfo = computed(() =>
+  journeyData.value
+    ? getTypeIconAndColor(journeyData.value.journey.type)
+    : { color: "gray", icon: "pi-question" }
+);
+
+const formattedDate = computed(() =>
+  journeyData.value
+    ? getFormattedDate({ date: new Date(journeyData.value.journey.date) })
+    : ""
+);
+
+const duration = computed(() =>
+  journeyData.value
+    ? getDurationHours({ journey: journeyData.value.journey })
+    : ""
+);
+</script>
 
 <template>
-  <p>journey id</p>
+  <div v-if="loading" class="center">Chargement...</div>
+  <div v-else-if="error" class="error">{{ error }}</div>
+
+  <section v-else-if="journeyData" class="journey-details">
+    <header class="journey-header">
+      <i
+        :class="['pi', typeInfo.icon]"
+        :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
+        aria-hidden="true"
+      />
+      <h1>{{ journeyData.journey.title }}</h1>
+    </header>
+
+    <p class="date">{{ formattedDate }}</p>
+    <div class="tags-row">
+      <Tag
+        :severity="journeyData.journey.isFullDay ? 'info' : 'success'"
+        :value="journeyData.journey.isFullDay ? 'Journée complète' : duration"
+      />
+      <Tag
+        v-if="journeyData.journey.needPMR"
+        severity="warning"
+        value="Accessible PMR"
+      />
+    </div>
+
+    <section class="activities-section">
+      <h2>Activités</h2>
+      <ul>
+        <!-- <li
+          v-for="id in journeyData.sortie.activitiesId"
+          :key="id"
+          class="activity-item"
+        >
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+          Activité ID: {{ id }}
+          <a
+            class="external-link"
+            :href="`https://explore.data.gouv.fr/fr/datasets/activite/${id}`"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Voir plus
+            <i class="pi pi-external-link"></i>
+          </a>
+        </li> -->
+      </ul>
+    </section>
+
+    <section class="restaurant-section">
+      <h2>Restaurant</h2>
+      <div v-if="journeyData.restaurants" class="restaurant-info">
+        <div class="header">
+          <h3>{{ journeyData.restaurants.title }}</h3>
+          <Badge>
+            {{ journeyData.restaurants.prix_min }}€ -
+            {{ journeyData.restaurants.prix_max }}€
+          </Badge>
+        </div>
+        <p>{{ journeyData.restaurants.type }}</p>
+
+        <div class="tags-row">
+          <Tag
+            v-if="journeyData.restaurants.amis"
+            severity="info"
+            value="Amis"
+          />
+          <Tag
+            v-if="journeyData.restaurants.couple"
+            severity="warning"
+            value="Couple"
+          />
+          <Tag
+            v-if="journeyData.restaurants.famille"
+            severity="success"
+            value="Famille"
+          />
+        </div>
+        <div>
+          <h4>Accès</h4>
+          <p>Métro : {{ journeyData.restaurants.metro }}</p>
+          <MapEmbed :address="journeyData.restaurants.address" />
+        </div>
+      </div>
+      <p v-else class="no-restaurant">Aucun restaurant associé</p>
+    </section>
+  </section>
 </template>
 
-<style></style>
+<style scoped>
+.center {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #d9534f;
+  text-align: center;
+  font-weight: bold;
+}
+
+.journey-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.journey-header h1 {
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--p-primary-400);
+}
+
+.date {
+  font-size: 1rem;
+  color: var(--p-gray-600);
+  margin-bottom: 1rem;
+}
+
+.tags-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.activities-section,
+.restaurant-section {
+  margin-bottom: 2rem;
+}
+
+.activities-section h2,
+.restaurant-section h2 {
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--p-primary-400);
+  padding-bottom: 0.3rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.external-link {
+  margin-left: auto;
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.external-link:hover {
+  text-decoration: underline;
+}
+
+.restaurant-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.restaurant-info p {
+  margin: 0.2rem 0;
+  font-size: 1rem;
+}
+
+.no-restaurant {
+  font-style: italic;
+  text-align: center;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+</style>
