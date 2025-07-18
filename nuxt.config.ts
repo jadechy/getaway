@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { MyPreset } from "./themes/mytheme";
+import svgLoader from "vite-svg-loader";
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -50,5 +51,9 @@ export default defineNuxtConfig({
     { path: "~/components", pathPrefix: false },
     { path: "~/components/ui_kit", pathPrefix: false },
   ],
+
+  vite: {
+    plugins: [svgLoader()],
+  },
   typescript: { strict: true },
 });
