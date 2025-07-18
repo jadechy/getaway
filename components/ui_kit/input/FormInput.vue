@@ -18,20 +18,15 @@ defineProps<Props>();
 </script>
 
 <template>
-  <WrapperInput :name :placeholder :form class="wrapper">
+  <WrapperInput :name :placeholder :form>
     <InputText
       :id="name"
       :name="name"
       :disabled="disabled"
       :readonly="readonly"
       :type="type || 'text'"
-      fluid
+      class="w-full"
       :autocomplete="autocomplete"
     />
   </WrapperInput>
 </template>
-<style scoped>
-.wrapper {
-  width: 100%;
-}
-</style>

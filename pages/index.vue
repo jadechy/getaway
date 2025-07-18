@@ -1,52 +1,18 @@
-<script setup lang="ts">
-import { Image } from "primevue";
-import picture from "../assets/img/homepage.jpg";
-const router = useRouter();
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <article>
-    <div class="leftSection">
-      <h1>Bienvenue sur Getaway</h1>
-      <h2>Avec Getaway créé des sorties inoubliables sur mesure</h2>
-      <div class="group-btn">
-        <Button @click="router.push('/auth/register')" label="Démarrer" />
-        <Button
-          @click="router.push('/auth/login')"
-          label="Se connecter"
-          variant="outlined"
-        />
-      </div>
-    </div>
-    <img :src="picture" />
-  </article>
+  <h2>Bienvenue sur Getaway</h2>
+  <p>Avec Getaway créé des sorties inoubliables sur mesure</p>
+  <Button asChild v-slot="slotProps">
+    <RouterLink to="/auth/register" :class="slotProps.class">
+      Créer un compte gratuitement
+    </RouterLink>
+  </Button>
+  <Button asChild v-slot="slotProps">
+    <RouterLink to="/auth/login" :class="slotProps.class">
+      Se connecter
+    </RouterLink>
+  </Button>
 </template>
 
-<style scoped>
-h1 {
-  font-size: medium;
-  font-weight: 500;
-}
-h2 {
-  font-size: xx-large;
-  font-weight: bold;
-}
-.group-btn {
-  display: flex;
-  gap: 8px;
-}
-.leftSection {
-  width: 50%;
-}
-article {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-img {
-  width: 300px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 5px;
-}
-</style>
+<style></style>

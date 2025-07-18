@@ -1,33 +1,30 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "auth",
-});
-import { ref } from "vue";
-import { useAuth } from "@/composables/useAuth";
+    import { ref } from 'vue'
+    import { useAuth } from '@/composables/useAuth'
 
-const { registerUser } = useAuth();
+    const { registerUser } = useAuth()
 
-const firstName = ref("");
-const lastName = ref("");
-const email = ref("");
-const password = ref("");
-const error = ref("");
+    const firstName = ref('')
+    const lastName = ref('')
+    const email = ref('')
+    const password = ref('')
+    const error = ref('')
 
-const handleRegister = async () => {
-  try {
-    error.value = "";
-    await registerUser({
-      email: email.value,
-      password: password.value,
-      firstName: firstName.value,
-      lastName: lastName.value,
-    });
-
-    navigateTo("/");
-  } catch (err: any) {
-    error.value = err.message;
-  }
-};
+    const handleRegister = async () => {
+        try {
+            error.value = ''
+            await registerUser({
+            email: email.value,
+            password: password.value,
+            firstName: firstName.value,
+            lastName: lastName.value,
+            })
+            
+            navigateTo('/')
+        } catch (err: any) {
+            error.value = err.message
+        }
+    }
 </script>
 
 <template>
