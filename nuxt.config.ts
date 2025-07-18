@@ -50,6 +50,7 @@ export default defineNuxtConfig({
   components: [
     { path: "~/components", pathPrefix: false },
     { path: "~/components/ui_kit", pathPrefix: false },
+    { path: "~/components/journey", pathPrefix: false },
   ],
 
   vite: {

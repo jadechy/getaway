@@ -1,25 +1,26 @@
-import { ActivityType } from "../types/activity";
-export interface Color {
-  name: string;
+import { ActivityType } from "~/types/journey";
+
+export interface IconAndColor {
+  color: string;
   icon: string | null;
 }
 
-export const getColoredBackgroundFromActivtyType = (
+export const getTypeIconAndColor = (
   activityType: ActivityType
-): Color => {
+): IconAndColor => {
   switch (activityType) {
     case ActivityType.friends:
-      return { name: "blue", icon: "pi-users" };
+      return { color: "blue", icon: "pi-users" };
     case ActivityType.romantic:
-      return { name: "pink", icon: "pi-heart" };
+      return { color: "pink", icon: "pi-heart" };
     case ActivityType.family:
-      return { name: "green", icon: "pi-home" };
+      return { color: "green", icon: "pi-home" };
     case ActivityType.random:
       return {
-        name: "yellow",
+        color: "yellow",
         icon: "pi-objects-column",
       };
     default:
-      return { name: "gray", icon: null };
+      return { color: "gray", icon: null };
   }
 };
