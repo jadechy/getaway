@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Image } from "primevue";
 import Logo from "../assets/img/logo.svg?component";
 const router = useRouter();
 </script>
