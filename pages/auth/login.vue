@@ -12,7 +12,7 @@
     const login = async () => {
         try {
             await userStore.login(email.value, password.value)
-            router.push('/')
+            router.push('/home')
         } catch (err) {
             console.error('Login error:', userStore.error)
         }
