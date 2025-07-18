@@ -1,56 +1,69 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
-    import { useUserStore } from '../../stores/userStore'
-    import { useRouter } from 'vue-router'
+import { Button, Password } from "primevue";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
+import { LoginRequestSchema } from "~/types/authType";
 
-    const userStore = useUserStore()
-    const router = useRouter()
-    
-    const email = ref('')
-    const password = ref('')
+const userStore = useUserStore();
+const router = useRouter();
 
-    const login = async () => {
-        try {
-            await userStore.login(email.value, password.value)
-            router.push('/home')
-        } catch (err) {
-            console.error('Login error:', userStore.error)
-        }
-    }
+const submitLogin = async (form: FormSubmitEvent) => {
+  if (!form.valid) return;
+  const { email, password } = form.states;
+
+  if (!email || !password) {
+    console.error("Email or password field is missing");
+    return;
+  }
+
+  try {
+    await userStore.login(email.value, password.value);
+    router.push("/");
+  } catch (err) {
+    console.error("Login error:", userStore.error);
+  }
+};
 </script>
 
 <template>
   <h2 class="text-center text-4xl mb-14">Connexion</h2>
-  <form @submit.prevent="login">
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-2" for="email">Email</label>
-          <input
-            v-model="email"
-            type="email"
-            id="email"
-            class="w-full p-3 border rounded-md"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-2" for="password">Mot de passe</label>
-          <input
-            v-model="password"
-            type="password"
-            id="password"
-            class="w-full p-3 border rounded-md"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-        >
-          Se connecter
-        </button>
-    </form>
+  <Form
+    v-slot="$form"
+    :resolver="zodResolver(LoginRequestSchema)"
+    class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+    @submit="submitLogin"
+  >
+    <FormInput
+      name="email"
+      placeholder="Ton email"
+      :form="$form"
+      autocomplete="util_mail"
+    />
+    <div class="w-full">
+      <WrapperInput :form="$form" name="password" placeholder="Mot de passe">
+        <Password
+          fluid
+          name="password"
+          class="w-full"
+          toggle-mask
+          :feedback="false"
+          :input-props="{ autocomplete: 'current-password' }"
+        />
+      </WrapperInput>
+      <RouterLink
+        :to="{ name: 'auth-forgot' }"
+        class="w-full text-end block text-gray-400 hover:underline"
+        >J'ai oublié mon mot de passe</RouterLink
+      >
+    </div>
+    <div class="flex flex-col items-center gap-0.5">
+      <Button type="submit" class="w-fit">Se connecter</Button>
+      <RouterLink :to="{ name: 'auth-register' }" class="hover:underline"
+        >Pas encore de compte</RouterLink
+      >
+    </div>
+  </Form>
 </template>
-
-<style></style>

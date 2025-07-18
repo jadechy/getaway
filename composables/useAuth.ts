@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { setDoc, doc, collection } from 'firebase/firestore'
 import { useFirebaseAuth, useFirestore } from 'vuefire'
+import { FirestoreUserSchema } from '~/types/user'
 
 export const useAuth = () => {
   const auth = useFirebaseAuth()
@@ -22,15 +23,27 @@ export const useAuth = () => {
     )
 
     const user = userCredential.user
-    userStore.setUser(user) // <- met à jour le store
+    userStore.setUser(user) 
 
-    await setDoc(doc(collection(db, 'users'), user.uid), {
+    const userData = {
       util_id: user.uid,
       util_prenom: userSignup.firstName,
       util_nom: userSignup.lastName,
       util_mail: userSignup.email,
       util_sorties: [],
-    })
+    }
+
+    FirestoreUserSchema.parse(userData)
+
+    await setDoc(doc(collection(db, 'users'), user.uid), userData)
+
+    // await setDoc(doc(collection(db, 'users'), user.uid), {
+    //   util_id: user.uid,
+    //   util_prenom: userSignup.firstName,
+    //   util_nom: userSignup.lastName,
+    //   util_mail: userSignup.email,
+    //   util_sorties: [],
+    // })
 
     return user
   }
