@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  definePageMeta({
-    middleware: ['auth']
-  })
-  import { useUserStore } from '@/stores/userStore'
-  import { storeToRefs } from 'pinia'
+definePageMeta({
+  middleware: ["auth"],
+});
+import { useUserStore } from "@/stores/userStore";
+import { storeToRefs } from "pinia";
 
-  const userStore = useUserStore()
-  userStore.init()
-  const { user } = storeToRefs(userStore)
+const userStore = useUserStore();
+userStore.init();
+const { user } = storeToRefs(userStore);
 </script>
 
 <template>

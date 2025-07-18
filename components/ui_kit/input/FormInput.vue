@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { InputText } from "primevue";
-import type { InputTextProps } from "primevue/inputtext";
+import type { InputTextProps } from "primevue";
 import WrapperInput from "./WrapperInput.vue";
 import type { FormState } from "~/types/formType";
 
