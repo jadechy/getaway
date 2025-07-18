@@ -1,32 +1,31 @@
 <script setup lang="ts">
-    import { Button, Password } from "primevue";
-    import { Form } from "@primevue/forms";
-    import type { FormSubmitEvent } from "@primevue/forms";
-    import { zodResolver } from "@primevue/forms/resolvers/zod";
-    import { useUserStore } from '../../stores/userStore'
-    import { useRouter } from 'vue-router'
-    import { LoginRequestSchema } from "~/types/authType";
+import { Button, Password } from "primevue";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
+import { LoginRequestSchema } from "~/types/authType";
 
-    const userStore = useUserStore()
-    const router = useRouter()
+const userStore = useUserStore();
+const router = useRouter();
 
-    const submitLogin = async (form: FormSubmitEvent) => {
-      if (!form.valid) return;
-      const emailField = form.states.email;
-      const passwordField = form.states.password;
+const submitLogin = async (form: FormSubmitEvent) => {
+  if (!form.valid) return;
+  const { email, password } = form.states;
 
-      if (!emailField || !passwordField) {
-        console.error('Email or password field is missing');
-        return;
-      }
-      
-      try {
-        await userStore.login(emailField.value, passwordField.value);
-        router.push('/');
-      } catch (err) {
-        console.error('Login error:', userStore.error);
-      }
-    }
+  if (!email || !password) {
+    console.error("Email or password field is missing");
+    return;
+  }
+
+  try {
+    await userStore.login(email.value, password.value);
+    router.push("/");
+  } catch (err) {
+    console.error("Login error:", userStore.error);
+  }
+};
 </script>
 
 <template>
@@ -37,9 +36,6 @@
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
     @submit="submitLogin"
   >
-    <!-- <div class="flex justify-center">
-      <GoogleComponent />
-    </div> -->
     <FormInput
       name="email"
       placeholder="Ton email"
