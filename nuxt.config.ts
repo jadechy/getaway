@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from "@tailwindcss/vite";
+import { MyPreset } from "./themes/mytheme";
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
@@ -8,7 +11,24 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "nuxt-vuefire",
     "@pinia/nuxt",
+    "@primevue/nuxt-module"
   ],
+
+  primevue: {
+    options: {
+      theme: {
+        preset: MyPreset,
+        options: {
+          darkModeSelector: false,
+          cssLayer: {
+            name: "primevue",
+            order: "theme, base, primevue",
+          },
+        },
+      },
+    },
+  },
+  css: ["primeicons/primeicons.css", "~/assets/css/main.css"],
 
   vuefire: {
     config: {
@@ -23,6 +43,15 @@ export default defineNuxtConfig({
     auth: {
       enabled: true,
     },
+  },
+
+  components: [
+    { path: "~/components", pathPrefix: false },
+    { path: "~/components/ui-kit", pathPrefix: false }
+  ],
+
+  vite: {
+    plugins: [tailwindcss()],
   },
   typescript: { strict: true },
 });
