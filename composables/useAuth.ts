@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { setDoc, doc, collection } from 'firebase/firestore'
 import { useFirebaseAuth, useFirestore } from 'vuefire'
 import { FirestoreUserSchema } from '~/types/user'
@@ -7,6 +7,21 @@ export const useAuth = () => {
   const auth = useFirebaseAuth()
   const db = useFirestore()
   const userStore = useUserStore()
+
+  if (!auth) {
+    throw new Error('Firebase Auth non initialisé')
+  }
+
+  const currentUser = ref(auth.currentUser)
+
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    currentUser.value = user
+    userStore.setUser(user) // mettre à jour le store si tu veux
+  })
+
+  onUnmounted(() => {
+    unsubscribe()
+  })
 
   const registerUser = async (userSignup: {
     email: string
@@ -48,5 +63,5 @@ export const useAuth = () => {
     return user
   }
 
-  return { registerUser }
+  return { currentUser, registerUser }
 }

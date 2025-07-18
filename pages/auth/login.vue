@@ -7,6 +7,10 @@ import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
 import { LoginRequestSchema } from "~/types/authType";
 
+definePageMeta({
+  layout: "auth",
+});
+
 const userStore = useUserStore();
 const router = useRouter();
 
@@ -29,11 +33,11 @@ const submitLogin = async (form: FormSubmitEvent) => {
 </script>
 
 <template>
-  <h2 class="text-center text-4xl mb-14">Connexion</h2>
+  <h2>Connexion</h2>
   <Form
     v-slot="$form"
     :resolver="zodResolver(LoginRequestSchema)"
-    class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+    class="form-container"
     @submit="submitLogin"
   >
     <FormInput
@@ -42,28 +46,78 @@ const submitLogin = async (form: FormSubmitEvent) => {
       :form="$form"
       autocomplete="util_mail"
     />
-    <div class="w-full">
+    <div class="input-wrapper">
       <WrapperInput :form="$form" name="password" placeholder="Mot de passe">
         <Password
           fluid
           name="password"
-          class="w-full"
+          class="password-input"
           toggle-mask
           :feedback="false"
           :input-props="{ autocomplete: 'current-password' }"
         />
       </WrapperInput>
-      <RouterLink
-        :to="{ name: 'auth-forgot' }"
-        class="w-full text-end block text-gray-400 hover:underline"
-        >J'ai oublié mon mot de passe</RouterLink
-      >
     </div>
-    <div class="flex flex-col items-center gap-0.5">
-      <Button type="submit" class="w-fit">Se connecter</Button>
-      <RouterLink :to="{ name: 'auth-register' }" class="hover:underline"
+    <div class="actions">
+      <Button type="submit" class="submit-button">Se connecter</Button>
+      <RouterLink :to="{ name: 'auth-register' }" class="register-link"
         >Pas encore de compte</RouterLink
       >
     </div>
   </Form>
 </template>
+
+<style scoped>
+h2 {
+  font-size: x-large;
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  h2 {
+    text-align: center;
+  }
+  .form-container {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.input-wrapper {
+  width: 100%;
+}
+
+.password-input {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.submit-button {
+  width: fit-content;
+}
+
+.register-link {
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+</style>

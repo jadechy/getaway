@@ -1,0 +1,16 @@
+export const RESTAURANT_TYPES_LIST = {
+  italian: "Italien",
+  japanese: "Japonais",
+  chinese: "Chinois",
+  indian: "Indien",
+  french: "Français",
+  mexican: "Mexicain",
+  vegetarian: "Végétarien",
+  vegan: "Vegan",
+  grill: "Grill / BBQ",
+  seafood: "Fruits de mer",
+  burger: "Burgers",
+  tapas: "Tapas",
+  brunch: "Brunch",
+  traditional: "Traditionnel",
+};
