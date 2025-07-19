@@ -11,12 +11,8 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-
 import type { createJourneyAnswers, Answer } from "~/types/answer";
-
 import type { FirestoreUser } from "~/types/user";
-
-import { parseDateFrenchFormat, parseTimeString } from "~/utils/date";
 import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
 import {
   ActivityType,
@@ -24,42 +20,16 @@ import {
   type JourneyFromDB,
 } from "~/types/journey";
 import type { JourneyData } from "~/types/activity";
-const mapRawJourneyToJourney = (raw: JourneyFromDB): BaseJourney => {
-  const date = parseDateFrenchFormat(raw.SOR_DATE);
-  return {
-    id: raw.id,
-    type: raw.SOR_TYPE as ActivityType,
-    title: raw.SOR_TITRE,
-    date,
-    timeStart: parseTimeString(date, raw.SOR_HEURE_DEB),
-    timeFinish: parseTimeString(date, raw.SOR_HEURE_FIN),
-    isFullDay: raw.SOR_JOURNEE,
-    ownerId: raw.UTIL_ID,
-    needPMR: raw.SOR_PMR,
-  };
-};
-const mapRawRestaurantToRestaurant = (raw: RestaurantFromDB): Restaurant => {
-  return {
-    id: raw.id,
-    address: raw.REST_ADREESSE,
-    amis: Boolean(raw.REST_AMIS),
-    couple: Boolean(raw.REST_COUPLE),
-    famille: Boolean(raw.REST_FAMILLE),
-    metro: raw.REST_METRO,
-    title: raw.REST_NOM,
-    prix_max: Number(raw.REST_PRIX_MAX),
-    prix_min: Number(raw.REST_PRIX_MIN),
-    type: raw.REST_TYPE,
-    openingHour: raw.REST_HEURE_OUV ? Number(raw.REST_HEURE_OUV) : undefined,
-    closingHour: raw.REST_HEURE_FERM ? Number(raw.REST_HEURE_FERM) : undefined,
-    rateOutOf5: raw.REST_NOTE ? Number(raw.REST_NOTE) : undefined,
-  };
-};
+import {
+  mapRawJourneyToJourney,
+  mapRawRestaurantToRestaurant,
+} from "~/utils/journey/formatJourney";
 
 export const useJourney = () => {
   const db = getFirestore();
   const auth = getAuth();
   const { user } = useUserStore();
+
   const createJourney = async (
     form: createJourneyAnswers
   ): Promise<BaseJourney> => {
@@ -74,7 +44,8 @@ export const useJourney = () => {
     });
 
     // TODO : Changer le mot sorties en journeys
-
+    // TODO : CHanger le format SOR_DATE de string pour passer en date
+    // ? Même principe pour le heure deb et heure fin
     const docRef = await addDoc(collection(db, DataBaseCollections.sorties), {
       UTIL_ID: user?.uid,
       SOR_JOURNEE: form.journeyIsFullDay,
@@ -151,6 +122,7 @@ export const useJourney = () => {
 
     await updateDoc(userDoc, updatedData);
   };
+
   const searchRestaurantsByTypes = async (
     types: string[],
     sortieType: ActivityType,
@@ -232,6 +204,7 @@ export const useJourney = () => {
       return mapRawJourneyToJourney(rawData);
     });
   };
+
   const fetchJourneyById = async ({
     journeyId,
   }: {
@@ -267,6 +240,7 @@ export const useJourney = () => {
       restaurants: restaurant,
     };
   };
+
   return {
     createJourney,
     fetchJourneysByUser,

@@ -23,13 +23,3 @@ export const parseTimeString = (date: Date, timeStr: string): Date => {
   newDate.setHours(hour, minute, 0, 0);
   return newDate;
 };
-
-const formattedDate = form.journeyDate.toLocaleDateString("fr-FR");
-const formattedStart = form.journeyStartingTime.toLocaleTimeString("fr-FR", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
-const formattedEnd = form.journeyEndingTime.toLocaleTimeString("fr-FR", {
-  hour: "2-digit",
-  minute: "2-digit",
-});

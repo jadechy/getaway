@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormStepProps } from "~/types/form-types";
-import { RESTAURANT_TYPES_LIST } from "~/utils/const/restaurantTypes";
+import { RESTAURANT_TYPES_LIST } from "~/data/restaurantTypes";
 
 const props = defineProps<FormStepProps>();
 

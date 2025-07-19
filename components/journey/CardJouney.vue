@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { getTypeIconAndColor } from "../../utils/activityType";
+import { getIconAndColor } from "../../utils/getIconColorFormActivity";
 import type { BaseJourney } from "~/types/journey";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 const props = defineProps<Props>();
 console.log(props.journey);
 
-const typeInfo = computed(() => getTypeIconAndColor(props.journey.type));
+const typeInfo = computed(() => getIconAndColor(props.journey.type));
 
 const durationHours = computed(() =>
   getDurationHours({ journey: props.journey })

@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import { ref, computed, onMounted } from "vue";
 import { useJourney } from "~/composables/useJourney";
 import type { JourneyData } from "~/types/activity";
-import { getTypeIconAndColor } from "~/utils/activityType";
+import { getIconAndColor } from "~/utils/getIconColorFormActivity";
 import { Badge, Tag } from "primevue";
 
 const route = useRoute();
@@ -28,7 +28,7 @@ onMounted(async () => {
 
 const typeInfo = computed(() =>
   journeyData.value
-    ? getTypeIconAndColor(journeyData.value.journey.type)
+    ? getIconAndColor(journeyData.value.journey.type)
     : { color: "gray", icon: "pi-question" }
 );
 

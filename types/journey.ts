@@ -28,7 +28,7 @@ export type JourneyFromDB = {
   UTIL_ID: string;
   ACT_ID1?: number;
   ACT_ID2?: number;
-  RES_ID?: string;
+  RES_ID: string;
 };
 export type Step = {
   isRestaurant: boolean;

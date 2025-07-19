@@ -36,9 +36,9 @@ type Props = {
   completeData: CompleteData;
 };
 
-export async function fetchBaseJourneyFromId(
+export const fetchBaseJourneyFromId = async (
   journeyId: string
-): Promise<BaseJourney | undefined> {
+): Promise<BaseJourney | undefined> => {
   const db = useFirestore();
   if (!db) throw new Error("Firestore is not initialized");
 
@@ -57,11 +57,11 @@ export async function fetchBaseJourneyFromId(
     console.error("Erreur lors du fetch du journey:", error);
     return undefined;
   }
-}
+};
 
-export async function fetchBaseJourneyAnswersFromId(
+export const fetchBaseJourneyAnswersFromId = async (
   journeyId: string
-): Promise<Answer[] | undefined> {
+): Promise<Answer[] | undefined> => {
   const db = useFirestore();
   if (!db) throw new Error("Firestore is not initialized");
 
@@ -81,9 +81,12 @@ export async function fetchBaseJourneyAnswersFromId(
     console.error("Erreur lors du fetch des réponses:", error);
     return undefined;
   }
-}
+};
 
-function buildActivityQueryParams(answers: Answer[], baseJourney: BaseJourney) {
+const buildActivityQueryParams = (
+  answers: Answer[],
+  baseJourney: BaseJourney
+) => {
   const limit = 30;
   const start = 0;
 
@@ -113,9 +116,9 @@ function buildActivityQueryParams(answers: Answer[], baseJourney: BaseJourney) {
   const encodedWhereQuery = encodeURIComponent(whereQuery);
 
   return `limit=${limit}&start=${start}&where=${encodedWhereQuery}&select=${ACTIVITY_TYPES_SELECT_STRING}`;
-}
+};
 
-function journeyTypePublicFilterValues(journeyType: ActivityType): string[] {
+const journeyTypePublicFilterValues = (journeyType: ActivityType): string[] => {
   switch (journeyType) {
     case ActivityType.family:
       return [
@@ -132,12 +135,12 @@ function journeyTypePublicFilterValues(journeyType: ActivityType): string[] {
     case ActivityType.random:
       return [];
   }
-}
+};
 
-export async function findActivityFromAnswers(
+export const findActivityFromAnswers = async (
   answers: Answer[],
   baseJourney: BaseJourney
-): Promise<ActivityApiType[]> {
+): Promise<ActivityApiType[]> => {
   const queryParams = buildActivityQueryParams(answers, baseJourney);
   const response = await fetch(
     `https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records?${queryParams}`
@@ -151,25 +154,27 @@ export async function findActivityFromAnswers(
     throw new Error("Aucune activité trouvée");
 
   return data.results as ActivityApiType[];
-}
+};
 
-export async function loadActivities(answers: Answer[], journey: BaseJourney) {
+export const loadActivities = async (
+  answers: Answer[],
+  journey: BaseJourney
+) => {
   try {
     const activities = await findActivityFromAnswers(answers, journey);
     activityList.value = activities;
   } catch (error) {
     console.error("Erreur chargement activités:", error);
   }
-}
+};
 
-export async function completeJourney({ journeyId, completeData }: Props) {
+export const completeJourney = async ({ journeyId, completeData }: Props) => {
   const db = useFirestore();
   if (!db) throw new Error("Firestore is not initialized");
 
   const sortiesCollectionRef = collection(db, DataBaseCollections.sorties);
   const sortieRef = doc(sortiesCollectionRef, journeyId);
 
-  // Construire l’objet des champs à mettre à jour
   const newFields = completeData.isFullDay
     ? {
         ACT_ID1: completeData.activity1Id,
@@ -185,6 +190,6 @@ export async function completeJourney({ journeyId, completeData }: Props) {
     await updateDoc(sortieRef, newFields);
   } catch (error) {
     console.error("Error updating sortie:", error);
-    throw error; // ou gérer l’erreur comme tu préfères
+    throw error;
   }
-}
+};
