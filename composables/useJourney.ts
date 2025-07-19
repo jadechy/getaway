@@ -1,11 +1,11 @@
-import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { DataBaseCollections } from '~/utils/const/databaseCollections'
 
 import type { createJourneyAnswers, Answer } from '~/types/answer'
 
 import type { FirestoreUser } from '~/types/user'
-import type { BaseJourney } from '~/types/activity'
+import { ActivityType, type BaseJourney, type Restaurant } from '~/types/activity'
 
 
 export function useJourney() {
@@ -92,5 +92,68 @@ export function useJourney() {
 
   return {
     createJourney
+  }
+}
+
+function journeyTypeQueryParam(type: ActivityType): 'REST_FAMILLE' | 'REST_AMIS' | 'REST_COUPLE' {
+  switch (type) {
+    case ActivityType.family:
+      return 'REST_FAMILLE'
+    case ActivityType.friends:
+      return 'REST_AMIS'
+    case ActivityType.romantic:
+      return 'REST_COUPLE'
+    default:
+      return 'REST_AMIS'
+  }
+}
+
+export async function searchRestaurantsByTypes(
+  types: string[],
+  sortieType: ActivityType,
+  prixMax: number
+): Promise<Restaurant[]> {
+  const db = useFirestore()
+  if (!db) throw new Error('Firestore is not initialized')
+
+  try {
+    const restaurantsCollectionRef = collection(db, DataBaseCollections.restaurants)
+
+    let q
+
+    if (sortieType === ActivityType.random) {
+      q = query(restaurantsCollectionRef)
+    } else {
+      q = query(
+        restaurantsCollectionRef,
+        where('REST_TYPE', 'in', types),
+        where(journeyTypeQueryParam(sortieType), '==', true)
+      )
+    }
+
+    const querySnapshot = await getDocs(q)
+
+    const matchingRestaurants = querySnapshot.docs
+      .map(doc => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          address: data.REST_ADRESSE,
+          amis: data.REST_AMIS,
+          couple: data.REST_COUPLE,
+          famille: data.REST_FAMILLE,
+          metro: data.REST_METRO,
+          title: data.REST_NOM,
+          prix_max: Number(data.REST_PRIX_MAX),
+          prix_min: Number(data.REST_PRIX_MIN),
+          type: data.REST_TYPE
+        } as Restaurant
+      })
+      .filter(restaurant => restaurant.prix_max <= prixMax)
+
+    return matchingRestaurants
+  } catch (error) {
+    console.error('Erreur lors de la recherche des restaurants :', error)
+    throw error
   }
 }
