@@ -20,9 +20,9 @@ const showSidebar = ref(false);
 
     <nav class="desktop-nav">
       <RouterLink to="/journey/generate">Nouvelle sortie</RouterLink>
-      <RouterLink to="/journey/generate">Sortie précédente</RouterLink>
+      <RouterLink to="/journey/generate">Résultat</RouterLink>
       <Logo class="logo" @click="router.push('/')" />
-      <RouterLink to="/journey/all">Mes sorties</RouterLink>
+      <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
       <RouterLink to="/profil">Profil</RouterLink>
     </nav>
 
@@ -36,10 +36,10 @@ const showSidebar = ref(false);
           >Nouvelle sortie</RouterLink
         >
         <RouterLink to="/journey/generate" @click="showSidebar = false"
-          >Sortie précédente</RouterLink
+          >Résultat</RouterLink
         >
         <RouterLink to="/journey/all" @click="showSidebar = false"
-          >Mes sorties</RouterLink
+          >Sorties enregistrées</RouterLink
         >
         <RouterLink to="/profil" @click="showSidebar = false"
           >Profil</RouterLink
