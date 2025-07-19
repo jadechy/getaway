@@ -100,7 +100,7 @@ const router = useRouter();
   text-align: center;
 }
 .features {
-  margin-top: 100vh;
+  margin-top: calc(100vh - 6rem);
 }
 
 .features ul {
