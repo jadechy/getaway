@@ -1,48 +1,53 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { useFirebaseAuth } from 'vuefire'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useFirebaseAuth } from "vuefire";
 import {
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
-} from 'firebase/auth'
-import type { User } from 'firebase/auth'
+  onAuthStateChanged,
+} from "firebase/auth";
+import type { User } from "firebase/auth";
 
-export const useUserStore = defineStore('user', () => {
-  const auth = useFirebaseAuth()
-  const user = ref<User | null>(null)
-  const loading = ref(true)
-  const error = ref<string | null>(null)
-
+export const useUserStore = defineStore("user", () => {
+  const auth = useFirebaseAuth();
+  const user = ref<User | null>(null);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
   const init = () => {
-    if (!auth) return
+    if (!auth) return;
+
+    loading.value = true;
     onAuthStateChanged(auth, (u) => {
-      user.value = u
-      loading.value = false
-    })
-  }
+      user.value = u;
+      loading.value = false;
+    });
+  };
 
   const login = async (email: string, password: string) => {
-    if (!auth) return
-    error.value = null
+    if (!auth) return;
+    error.value = null;
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      user.value = userCredential.user
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      user.value = userCredential.user;
     } catch (err: any) {
-      error.value = err.message
-      throw err
+      error.value = err.message;
+      throw err;
     }
-  }
+  };
 
   const setUser = (u: User | null) => {
-    user.value = u
-  }
+    user.value = u;
+  };
 
   const logout = async () => {
-    if (!auth) return
-    await signOut(auth)
-    user.value = null
-  }
+    if (!auth) return;
+    await signOut(auth);
+    user.value = null;
+  };
 
   return {
     user,
@@ -51,6 +56,6 @@ export const useUserStore = defineStore('user', () => {
     init,
     login,
     logout,
-    setUser
-  }
-})
+    setUser,
+  };
+});

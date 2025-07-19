@@ -1,29 +1,36 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  type User,
 } from "firebase/auth";
 import { setDoc, doc, collection } from "firebase/firestore";
 import { useFirebaseAuth, useFirestore } from "vuefire";
 import { FirestoreUserSchema } from "~/types/user";
 
 export const useAuth = () => {
-  const auth = useFirebaseAuth();
-  const db = useFirestore();
+  const currentUser = ref<User | null>(null);
   const userStore = useUserStore();
 
-  if (!auth) {
-    throw new Error("Firebase Auth non initialisé");
-  }
+  let auth: ReturnType<typeof useFirebaseAuth>;
+  let db: ReturnType<typeof useFirestore>;
 
-  const currentUser = ref(auth.currentUser);
+  onMounted(() => {
+    auth = useFirebaseAuth();
+    db = useFirestore();
 
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    currentUser.value = user;
-    userStore.setUser(user);
-  });
+    if (!auth) throw new Error("Firebase Auth non initialisé");
+    if (!db) throw new Error("Firestore non initialisé");
 
-  onUnmounted(() => {
-    unsubscribe();
+    currentUser.value = auth.currentUser;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      currentUser.value = user;
+      userStore.setUser(user);
+    });
+
+    onUnmounted(() => {
+      unsubscribe();
+    });
   });
 
   const registerUser = async (userSignup: {

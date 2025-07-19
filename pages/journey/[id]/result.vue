@@ -122,13 +122,13 @@ async function handleSave() {
       </StepPreviewWithReload>
     </div>
 
-    <PrimaryButton
+    <Button
       label="Régénérer"
       @click="handleRegenerate"
       backgroundColor="#333"
     />
 
-    <PrimaryButton
+    <Button
       :label="
         baseJourney?.isFullDay
           ? 'Enregistrer la journée'
