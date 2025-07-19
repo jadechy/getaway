@@ -27,6 +27,7 @@ defineProps<{ testimonial: TestimonialProps; color: string }>();
 .testimonial {
   display: flex;
   align-items: center;
+  flex-direction: column;
   gap: 1rem;
   border-radius: 8px;
   border-width: 1px;
@@ -60,5 +61,10 @@ defineProps<{ testimonial: TestimonialProps; color: string }>();
   display: block;
   font-size: 0.875rem;
   margin-top: 0.5rem;
+}
+@media (min-width: 768px) {
+  .testimonial {
+    flex-direction: row;
+  }
 }
 </style>

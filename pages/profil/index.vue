@@ -9,7 +9,7 @@ const router = useRouter();
 
 const handleLogout = async () => {
   await userStore.logout();
-  router.push("/login");
+  router.push("/");
 };
 </script>
 
