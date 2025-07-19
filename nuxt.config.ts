@@ -44,13 +44,18 @@ export default defineNuxtConfig({
     },
     auth: {
       enabled: true,
+
+      sessionCookie: true,
     },
+    ssr: true,
   },
 
   components: [
     { path: "~/components", pathPrefix: false },
     { path: "~/components/ui_kit", pathPrefix: false },
     { path: "~/components/journey", pathPrefix: false },
+    { path: "~/components/general", pathPrefix: false },
+    { path: "~/components/form", pathPrefix: false },
   ],
 
   vite: {

@@ -1,6 +1,6 @@
-import type { createJourneyAnswers } from "./answer";
+import type { CreateJourneyAnswers } from "./answer";
 
 export type FormStepProps = {
-  formAnswers: createJourneyAnswers;
-  setFormAnswers: (value: createJourneyAnswers) => void;
+  formAnswers: CreateJourneyAnswers;
+  setFormAnswers: (value: CreateJourneyAnswers) => void;
 };

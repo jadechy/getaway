@@ -1,9 +1,9 @@
 import type { Journey } from "~/types/activity";
 import type { BaseJourney } from "~/types/journey";
 
-export function recapJourneyInformation(journey: BaseJourney | Journey) {
+export function recapJourneyInformation(journey: BaseJourney) {
   const finalColor = "pink";
-
+  console.log(journey);
   const recapInformation = [
     {
       label: "Sortie le",

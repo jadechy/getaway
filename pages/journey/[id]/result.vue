@@ -92,7 +92,7 @@ async function handleSave() {
 
 <template>
   <div>
-    <Recap :informations="recapJourneyInformation(baseJourney)" color="green" />
+    <Recap :journeys="[baseJourney]" color="green" />
 
     <div>
       <StepPreviewWithReload :reload="shuffleAct1">
@@ -122,13 +122,13 @@ async function handleSave() {
       </StepPreviewWithReload>
     </div>
 
-    <PrimaryButton
+    <Button
       label="Régénérer"
       @click="handleRegenerate"
       backgroundColor="#333"
     />
 
-    <PrimaryButton
+    <Button
       :label="
         baseJourney?.isFullDay
           ? 'Enregistrer la journée'

@@ -1,65 +1,48 @@
-export const ACTIVITY_TYPES_LIST = {
-  sport: "Sport",
-  culture: "Culture",
-  nature: "Nature",
-  art: "Art",
-  music: "Musique",
-  game: "Jeux",
-  wellness: "Bien-être",
-  workshop: "Atelier",
-  cinema: "Cinéma",
-  theater: "Théâtre",
-  shopping: "Shopping",
-  unusual: "Insolite",
-  outdoor: "Plein air",
-  discovery: "Découverte",
+export type ActivityApiType = {
+  id: number;
+  url: string;
+  title: string;
+  description: string;
+  cover_url: string;
+  cover_alt: string;
+  tags: string[];
+  address_name: string;
+  address_street: string;
+  address_zipcode: string;
+  address_city: string;
+  lat_lon: string;
+  pmr: string;
+  transport: string;
+  price_type: string;
+  price_detail: string;
+  access_link: string;
+  title_event: string;
+  audience: string;
 };
 
-export type ActivityApiType = {
-    id :number,
-    url: string,
-    title: string,
-    description: string,
-    cover_url:string,
-    cover_alt:string,
-    tags:string[],
-    address_name:string,
-    address_street:string,
-    address_zipcode:string,
-    address_city:string,
-    lat_lon:string,
-    pmr:string,
-    transport:string,
-    price_type:string,
-    price_detail:string,
-    access_link: string,
-    title_event:string,
-    audience: string,
-}
-
-const ACTIVITY_TYPES_SELECT : Record<string, boolean> = {
-  "id" :true,
-  "url": true,
-  "title": true,
-  "description": true,
-  "cover_url":true,
-  "cover_alt":true,
-  "tags":true,
-  "address_name":true,
-  "address_street":true,
-  "address_zipcode":true,
-  "address_city":true,
-  "lat_lon":true,
-  "pmr":true,
-  "transport":true,
-  "price_type":true,
-  "price_detail":true,
-  "access_link": true,
-  "title_event":true,
-  "audience": true,
-  "date_start":true,
-  "date_end":true,
-}
+const ACTIVITY_TYPES_SELECT: Record<string, boolean> = {
+  id: true,
+  url: true,
+  title: true,
+  description: true,
+  cover_url: true,
+  cover_alt: true,
+  tags: true,
+  address_name: true,
+  address_street: true,
+  address_zipcode: true,
+  address_city: true,
+  lat_lon: true,
+  pmr: true,
+  transport: true,
+  price_type: true,
+  price_detail: true,
+  access_link: true,
+  title_event: true,
+  audience: true,
+  date_start: true,
+  date_end: true,
+};
 export const ACTIVITY_TYPES_SELECT_STRING = Object.keys(ACTIVITY_TYPES_SELECT)
-  .filter(key => ACTIVITY_TYPES_SELECT[key]) // Filter keys with truthy values
+  .filter((key) => ACTIVITY_TYPES_SELECT[key]) // Filter keys with truthy values
   .join(",");
