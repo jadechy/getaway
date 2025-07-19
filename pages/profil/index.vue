@@ -2,8 +2,8 @@
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
-
-const { user } = storeToRefs(useUserStore());
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 const router = useRouter();
 

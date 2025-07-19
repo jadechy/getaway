@@ -11,7 +11,8 @@ const router = useRouter();
 </template>
 <style scoped>
 main {
-  padding-inline: 20px;
+  padding-inline: 2.5rem;
+  margin-top: 3rem;
 }
 svg {
   max-width: 200px;

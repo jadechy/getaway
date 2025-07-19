@@ -4,49 +4,58 @@ import Logo from "~/assets/img/logo.svg?component";
 
 const router = useRouter();
 const showSidebar = ref(false);
+const { user } = storeToRefs(useUserStore());
 </script>
 
 <template>
-  <header class="site-header">
-    <div class="mobile-header">
-      <Button
-        icon="pi pi-bars"
-        class="burger-btn"
-        @click="showSidebar = true"
-        text
-      />
-      <Logo class="logo" @click="router.push('/')" />
-    </div>
-
-    <nav class="desktop-nav">
-      <RouterLink to="/journey/generate">Nouvelle sortie</RouterLink>
-      <RouterLink to="/journey/generate">Résultat</RouterLink>
-      <Logo class="logo" @click="router.push('/')" />
-      <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
-      <RouterLink to="/profil">Profil</RouterLink>
-    </nav>
-
-    <Sidebar
-      v-model:visible="showSidebar"
-      position="left"
-      class="mobile-sidebar"
-    >
-      <div class="sidebar-links">
-        <RouterLink to="/journey/generate" @click="showSidebar = false"
-          >Nouvelle sortie</RouterLink
-        >
-        <RouterLink to="/journey/generate" @click="showSidebar = false"
-          >Résultat</RouterLink
-        >
-        <RouterLink to="/journey/all" @click="showSidebar = false"
-          >Sorties enregistrées</RouterLink
-        >
-        <RouterLink to="/profil" @click="showSidebar = false"
-          >Profil</RouterLink
-        >
+  <ClientOnly>
+    <header class="site-header" v-if="user">
+      <div class="mobile-header">
+        <Button
+          icon="pi pi-bars"
+          class="burger-btn"
+          @click="showSidebar = true"
+          text
+        />
+        <Logo class="logo" @click="router.push('/')" />
       </div>
-    </Sidebar>
-  </header>
+
+      <nav class="desktop-nav">
+        <RouterLink to="/journey/generate">Nouvelle sortie</RouterLink>
+        <RouterLink to="/journey/generate">Résultat</RouterLink>
+        <Logo class="logo" @click="router.push('/')" />
+        <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
+        <RouterLink to="/profil">Profil</RouterLink>
+      </nav>
+
+      <Sidebar
+        v-model:visible="showSidebar"
+        position="left"
+        class="mobile-sidebar"
+      >
+        <div class="sidebar-links">
+          <RouterLink to="/journey/generate" @click="showSidebar = false"
+            >Nouvelle sortie</RouterLink
+          >
+          <RouterLink to="/journey/generate" @click="showSidebar = false"
+            >Résultat</RouterLink
+          >
+          <RouterLink to="/journey/all" @click="showSidebar = false"
+            >Sorties enregistrées</RouterLink
+          >
+          <RouterLink to="/profil" @click="showSidebar = false"
+            >Profil</RouterLink
+          >
+        </div>
+      </Sidebar>
+    </header>
+    <header v-else class="site-header-default site-header">
+      <nav>
+        <Logo class="logo" @click="router.push('/')" />
+        <RouterLink to="/auth/login">Connexion</RouterLink>
+      </nav>
+    </header>
+  </ClientOnly>
 </template>
 
 <style scoped>
@@ -80,14 +89,25 @@ const showSidebar = ref(false);
   padding: 2rem;
 }
 
-.mobile-sidebar a {
+a {
   text-decoration: none;
   color: var(--p-primary-color);
+  &:hover {
+    text-decoration: underline;
+  }
 }
 .desktop-nav a.router-link-active,
 .mobile-sidebar a.router-link-active {
   color: white !important;
   font-weight: bold;
+}
+
+.site-header-default {
+  width: 100%;
+  nav {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 </style>
 
@@ -103,14 +123,6 @@ const showSidebar = ref(false);
     align-items: center;
     justify-content: center;
     gap: 2rem;
-  }
-
-  .desktop-nav a {
-    text-decoration: none;
-    color: var(--p-primary-color);
-    &:hover {
-      text-decoration: underline;
-    }
   }
 
   .logo {
