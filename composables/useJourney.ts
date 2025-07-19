@@ -11,50 +11,25 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-
 import type { createJourneyAnswers, Answer } from "~/types/answer";
-
 import type { FirestoreUser } from "~/types/user";
-import type { JourneyData } from "~/types/activity";
-import { parseDateFrenchFormat, parseTimeString } from "~/utils/date";
-import type { ActivityType, BaseJourney, JourneyFromDB } from "~/types/journey";
 import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
-const mapRawJourneyToJourney = (raw: JourneyFromDB): BaseJourney => {
-  const date = parseDateFrenchFormat(raw.SOR_DATE);
-  return {
-    id: raw.id,
-    type: raw.SOR_TYPE as ActivityType,
-    title: raw.SOR_TITRE,
-    date,
-    timeStart: parseTimeString(date, raw.SOR_HEURE_DEB),
-    timeFinish: parseTimeString(date, raw.SOR_HEURE_FIN),
-    isFullDay: raw.SOR_JOURNEE,
-    ownerId: raw.UTIL_ID,
-    needPMR: raw.SOR_PMR,
-  };
-};
-const mapRawRestaurantToRestaurant = (raw: RestaurantFromDB): Restaurant => {
-  return {
-    id: raw.id,
-    address: raw.REST_ADREESSE,
-    amis: Boolean(raw.REST_AMIS),
-    couple: Boolean(raw.REST_COUPLE),
-    famille: Boolean(raw.REST_FAMILLE),
-    metro: raw.REST_METRO,
-    title: raw.REST_NOM,
-    prix_max: Number(raw.REST_PRIX_MAX),
-    prix_min: Number(raw.REST_PRIX_MIN),
-    type: raw.REST_TYPE,
-    openingHour: raw.REST_HEURE_OUV ? Number(raw.REST_HEURE_OUV) : undefined,
-    closingHour: raw.REST_HEURE_FERM ? Number(raw.REST_HEURE_FERM) : undefined,
-    rateOutOf5: raw.REST_NOTE ? Number(raw.REST_NOTE) : undefined,
-  };
-};
+import {
+  ActivityType,
+  type BaseJourney,
+  type JourneyFromDB,
+} from "~/types/journey";
+import type { JourneyData } from "~/types/activity";
+import {
+  mapRawJourneyToJourney,
+  mapRawRestaurantToRestaurant,
+} from "~/utils/journey/formatJourney";
 
 export const useJourney = () => {
   const db = getFirestore();
   const auth = getAuth();
   const { user } = useUserStore();
+
   const createJourney = async (
     form: createJourneyAnswers
   ): Promise<BaseJourney> => {
@@ -69,6 +44,8 @@ export const useJourney = () => {
     });
 
     // TODO : Changer le mot sorties en journeys
+    // TODO : CHanger le format SOR_DATE de string pour passer en date
+    // ? Même principe pour le heure deb et heure fin
     const docRef = await addDoc(collection(db, DataBaseCollections.sorties), {
       UTIL_ID: user?.uid,
       SOR_JOURNEE: form.journeyIsFullDay,
@@ -146,6 +123,71 @@ export const useJourney = () => {
     await updateDoc(userDoc, updatedData);
   };
 
+  const searchRestaurantsByTypes = async (
+    types: string[],
+    sortieType: ActivityType,
+    prixMax: number
+  ): Promise<Restaurant[]> => {
+    try {
+      const restaurantsCollectionRef = collection(
+        db,
+        DataBaseCollections.restaurants
+      );
+
+      let q;
+
+      if (sortieType === ActivityType.random) {
+        q = query(restaurantsCollectionRef);
+      } else {
+        q = query(
+          restaurantsCollectionRef,
+          where("REST_TYPE", "in", types),
+          where(journeyTypeQueryParam(sortieType), "==", true)
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+
+      const matchingRestaurants = querySnapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            address: data.REST_ADRESSE,
+            amis: data.REST_AMIS,
+            couple: data.REST_COUPLE,
+            famille: data.REST_FAMILLE,
+            metro: data.REST_METRO,
+            title: data.REST_NOM,
+            prix_max: Number(data.REST_PRIX_MAX),
+            prix_min: Number(data.REST_PRIX_MIN),
+            type: data.REST_TYPE,
+          } as Restaurant;
+        })
+        .filter((restaurant) => restaurant.prix_max <= prixMax);
+
+      return matchingRestaurants;
+    } catch (error) {
+      console.error("Erreur lors de la recherche des restaurants :", error);
+      throw error;
+    }
+  };
+
+  const journeyTypeQueryParam = (
+    type: ActivityType
+  ): "REST_FAMILLE" | "REST_AMIS" | "REST_COUPLE" => {
+    switch (type) {
+      case ActivityType.family:
+        return "REST_FAMILLE";
+      case ActivityType.friends:
+        return "REST_AMIS";
+      case ActivityType.romantic:
+        return "REST_COUPLE";
+      default:
+        return "REST_AMIS";
+    }
+  };
+
   const fetchJourneysByUser = async (): Promise<BaseJourney[]> => {
     if (!user?.uid) {
       console.warn("fetchJourneysByUser called with undefined userId");
@@ -162,6 +204,7 @@ export const useJourney = () => {
       return mapRawJourneyToJourney(rawData);
     });
   };
+
   const fetchJourneyById = async ({
     journeyId,
   }: {
@@ -172,29 +215,12 @@ export const useJourney = () => {
     const snapshot = await getDoc(docRef);
     if (!snapshot.exists()) return null;
     const data = snapshot.data();
-
-    // On parse les activités
     const activitiesId = [];
     if (data.ACT_FINAL1) activitiesId.push(Number(data.ACT_FINAL1));
     if (data.ACT_FINAL2) activitiesId.push(Number(data.ACT_FINAL2));
     const rawData = data as JourneyFromDB;
     rawData.id = snapshot.id;
     const journey = mapRawJourneyToJourney(rawData);
-    // const [day, month, year] = data.SOR_DATE.split("/").map(Number);
-    // const date = new Date(year, month - 1, day);
-    // const sortie: Journey = {
-    //   id: snapshot.id,
-    //   title: data.SOR_TITRE,
-    //   type: data.SOR_TYPE,
-    //   date: date,
-    //   timeStart: new Date(`${data.SOR_DATE}T${data.SOR_HEURE_DEB}`),
-    //   timeFinish: new Date(`${data.SOR_DATE}T${data.SOR_HEURE_FIN}`),
-    //   isFullDay: data.SOR_JOURNEE,
-    //   ownerId: data.UTIL_ID,
-    //   needPMR: data.SOR_PMR,
-    //   activitiesId,
-    //   restaurantId: data.RES_ID ?? "",
-    // };
     let restaurant: Restaurant | null = null;
     if (data.RES_ID) {
       const restoSnap = await getDoc(
@@ -214,9 +240,11 @@ export const useJourney = () => {
       restaurants: restaurant,
     };
   };
+
   return {
     createJourney,
     fetchJourneysByUser,
     fetchJourneyById,
+    searchRestaurantsByTypes,
   };
 };

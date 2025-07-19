@@ -5,9 +5,7 @@ export interface IconAndColor {
   icon: string | null;
 }
 
-export const getTypeIconAndColor = (
-  activityType: ActivityType
-): IconAndColor => {
+export const getIconAndColor = (activityType: ActivityType): IconAndColor => {
   switch (activityType) {
     case ActivityType.friends:
       return { color: "blue", icon: "pi-users" };

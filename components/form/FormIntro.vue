@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormStepProps } from '~/types/form-types';
+import type { FormStepProps } from "~/types/form-types";
 
 const props = defineProps<FormStepProps>();
 
@@ -7,7 +7,7 @@ const onNameChange = (e: Event) => {
   const input = e.target as HTMLInputElement;
   props.setFormAnswers({
     ...props.formAnswers,
-    journeyName: input.value
+    journeyName: input.value,
   });
 };
 
@@ -17,14 +17,14 @@ const onDateChange = (e: Event) => {
   if (!isNaN(selectedDate.getTime())) {
     props.setFormAnswers({
       ...props.formAnswers,
-      journeyDate: selectedDate
+      journeyDate: selectedDate,
     });
   }
 };
 
 const onStartTimeChange = (e: Event) => {
   const input = e.target as HTMLInputElement;
-  const [hStr, mStr] = input.value.split(':');
+  const [hStr, mStr] = input.value.split(":");
   const hours = Number(hStr);
   const minutes = Number(mStr);
   if (!isNaN(hours) && !isNaN(minutes)) {
@@ -33,14 +33,14 @@ const onStartTimeChange = (e: Event) => {
     newDate.setMinutes(minutes);
     props.setFormAnswers({
       ...props.formAnswers,
-      journeyStartingTime: newDate
+      journeyStartingTime: newDate,
     });
   }
 };
 
 const onEndTimeChange = (e: Event) => {
   const input = e.target as HTMLInputElement;
-  const [hStr, mStr] = input.value.split(':');
+  const [hStr, mStr] = input.value.split(":");
   const hours = Number(hStr);
   const minutes = Number(mStr);
   if (!isNaN(hours) && !isNaN(minutes)) {
@@ -49,7 +49,7 @@ const onEndTimeChange = (e: Event) => {
     newDate.setMinutes(minutes);
     props.setFormAnswers({
       ...props.formAnswers,
-      journeyEndingTime: newDate
+      journeyEndingTime: newDate,
     });
   }
 };
@@ -60,7 +60,7 @@ const onPeopleChange = (e: Event) => {
   if (!isNaN(value)) {
     props.setFormAnswers({
       ...props.formAnswers,
-      journeyMemberNumber: value
+      journeyMemberNumber: value,
     });
   }
 };
@@ -68,7 +68,7 @@ const onPeopleChange = (e: Event) => {
 const togglePMR = (value: boolean) => {
   props.setFormAnswers({
     ...props.formAnswers,
-    journeyNeedPMR: value
+    journeyNeedPMR: value,
   });
 };
 </script>
@@ -82,20 +82,11 @@ const togglePMR = (value: boolean) => {
       placeholder="Nom de la sortie"
     />
 
-    <input
-      type="date"
-      @input="onDateChange"
-    />
+    <input type="date" @input="onDateChange" />
 
-    <input
-      type="time"
-      @input="onStartTimeChange"
-    />
+    <input type="time" @input="onStartTimeChange" />
 
-    <input
-      type="time"
-      @input="onEndTimeChange"
-    />
+    <input type="time" @input="onEndTimeChange" />
 
     <input
       type="range"

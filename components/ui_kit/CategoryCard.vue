@@ -2,7 +2,10 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import type { ActivityType } from "~/types/journey";
-import { getTypeIconAndColor, type IconAndColor } from "~/utils/activityType";
+import {
+  getIconAndColor,
+  type IconAndColor,
+} from "~/utils/getIconColorFormActivity";
 
 const props = defineProps<{
   activityType: ActivityType;
@@ -11,9 +14,7 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const color = computed<IconAndColor>(() =>
-  getTypeIconAndColor(props.activityType)
-);
+const color = computed<IconAndColor>(() => getIconAndColor(props.activityType));
 
 const onClick = () => {
   router.push({

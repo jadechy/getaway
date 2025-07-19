@@ -24,7 +24,7 @@ const isLastStep = computed(() => currentStep.value === steps.length - 1);
 
 const steps = [FormIntro, FormChoice, FormActivity, FormResto];
 
-const rawType = route.query.type as string;
+const rawType = route.query.formType as string;
 const isValidActivityType = Object.values(ActivityType).includes(
   rawType as ActivityType
 );
@@ -68,7 +68,7 @@ async function handleSubmit(answers: createJourneyAnswers) {
   console.log("Soumission des réponses :", answers);
   try {
     const journey = await createJourney(formAnswers.value);
-    router.push(`/journey/${journey.id}`);
+    router.push(`/generated-journey/${journey.id}`);
   } catch (e) {
     console.error("Erreur lors de la création :", e);
   }
