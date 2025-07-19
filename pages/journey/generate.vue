@@ -5,6 +5,7 @@ import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
 import FormIntro from "~/components/form/FormIntro.vue";
 import FormTypeRange from "~/components/form/FormTypeRange.vue";
+import { storeToRefs } from "pinia";
 
 const { createJourney } = useJourney();
 

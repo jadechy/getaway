@@ -30,6 +30,11 @@ const submitLogin = async (form: FormSubmitEvent) => {
     console.error("Login error:", userStore.error);
   }
 };
+
+
+function definePageMeta(arg0: { layout: string; }) {
+  throw new Error("Function not implemented.");
+}
 </script>
 
 <template>
