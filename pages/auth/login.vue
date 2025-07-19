@@ -31,10 +31,6 @@ const submitLogin = async (form: FormSubmitEvent) => {
   }
 };
 
-
-function definePageMeta(arg0: { layout: string; }) {
-  throw new Error("Function not implemented.");
-}
 </script>
 
 <template>
