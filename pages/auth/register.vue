@@ -4,6 +4,7 @@ definePageMeta({
 });
 import { ref } from "vue";
 import { useAuth } from "@/composables/useAuth";
+import { InputText } from "primevue";
 
 const { registerUser } = useAuth();
 
@@ -31,14 +32,39 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <h2 class="text-center text-4xl mb-14">Créer un compte</h2>
+  <h2>Créer un compte</h2>
   <form @submit.prevent="handleRegister">
-    <input v-model="firstName" placeholder="Prénom" />
-    <input v-model="lastName" placeholder="Nom" />
-    <input v-model="email" placeholder="Email" />
-    <input v-model="password" type="password" placeholder="Mot de passe" />
-    <button type="submit">Créer un compte</button>
+    <div>
+      <InputText v-model="firstName" placeholder="Prénom" />
+      <InputText v-model="lastName" placeholder="Nom" />
+      <InputText v-model="email" placeholder="Email" />
+      <InputText v-model="email" placeholder="Age" />
+      <InputText
+        v-model="password"
+        type="password"
+        placeholder="Mot de passe"
+      />
+      <InputText
+        v-model="password"
+        type="password"
+        placeholder="Confirmation de mot de passe"
+      />
+    </div>
+    <Button type="submit">Créer un compte</Button>
   </form>
 </template>
 
-<style></style>
+<style scoped>
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & > div {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+</style>

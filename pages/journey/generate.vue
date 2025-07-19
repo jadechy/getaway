@@ -7,7 +7,7 @@ import FormActivity from "~/components/form/FormActivity.vue";
 import FormResto from "~/components/form/FormResto.vue";
 import type { createJourneyAnswers } from "~/types/answer";
 import { useJourney } from "~/composables/useJourney";
-import { ActivityType } from "~/types/activity";
+import { ActivityType } from "~/types/journey";
 
 const { createJourney } = useJourney();
 

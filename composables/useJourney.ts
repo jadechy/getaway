@@ -15,16 +15,54 @@ import { DataBaseCollections } from "~/utils/const/databaseCollections";
 import type { createJourneyAnswers, Answer } from "~/types/answer";
 
 import type { FirestoreUser } from "~/types/user";
-import type { Restaurant } from "~/types/restaurant";
-import { ActivityType, type BaseJourney } from "~/types/activity";
 
-export function useJourney() {
+import { parseDateFrenchFormat, parseTimeString } from "~/utils/date";
+import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
+import {
+  ActivityType,
+  type BaseJourney,
+  type JourneyFromDB,
+} from "~/types/journey";
+import type { JourneyData } from "~/types/activity";
+const mapRawJourneyToJourney = (raw: JourneyFromDB): BaseJourney => {
+  const date = parseDateFrenchFormat(raw.SOR_DATE);
+  return {
+    id: raw.id,
+    type: raw.SOR_TYPE as ActivityType,
+    title: raw.SOR_TITRE,
+    date,
+    timeStart: parseTimeString(date, raw.SOR_HEURE_DEB),
+    timeFinish: parseTimeString(date, raw.SOR_HEURE_FIN),
+    isFullDay: raw.SOR_JOURNEE,
+    ownerId: raw.UTIL_ID,
+    needPMR: raw.SOR_PMR,
+  };
+};
+const mapRawRestaurantToRestaurant = (raw: RestaurantFromDB): Restaurant => {
+  return {
+    id: raw.id,
+    address: raw.REST_ADREESSE,
+    amis: Boolean(raw.REST_AMIS),
+    couple: Boolean(raw.REST_COUPLE),
+    famille: Boolean(raw.REST_FAMILLE),
+    metro: raw.REST_METRO,
+    title: raw.REST_NOM,
+    prix_max: Number(raw.REST_PRIX_MAX),
+    prix_min: Number(raw.REST_PRIX_MIN),
+    type: raw.REST_TYPE,
+    openingHour: raw.REST_HEURE_OUV ? Number(raw.REST_HEURE_OUV) : undefined,
+    closingHour: raw.REST_HEURE_FERM ? Number(raw.REST_HEURE_FERM) : undefined,
+    rateOutOf5: raw.REST_NOTE ? Number(raw.REST_NOTE) : undefined,
+  };
+};
+
+export const useJourney = () => {
   const db = getFirestore();
   const auth = getAuth();
-
-  async function createJourney(
+  const { user } = useUserStore();
+  const createJourney = async (
     form: createJourneyAnswers
-  ): Promise<BaseJourney> {
+  ): Promise<BaseJourney> => {
     const formattedDate = form.journeyDate.toLocaleDateString("fr-FR");
     const formattedStart = form.journeyStartingTime.toLocaleTimeString(
       "fr-FR",
@@ -35,8 +73,10 @@ export function useJourney() {
       minute: "2-digit",
     });
 
+    // TODO : Changer le mot sorties en journeys
+
     const docRef = await addDoc(collection(db, DataBaseCollections.sorties), {
-      UTIL_ID: form.userId,
+      UTIL_ID: user?.uid,
       SOR_JOURNEE: form.journeyIsFullDay,
       SOR_TITRE: form.journeyName,
       SOR_DATE: formattedDate,
@@ -72,9 +112,9 @@ export function useJourney() {
       ownerId: form.userId,
       needPMR: form.journeyNeedPMR,
     };
-  }
+  };
 
-  async function createAnswer(answer: Answer): Promise<void> {
+  const createAnswer = async (answer: Answer): Promise<void> => {
     await addDoc(collection(db, DataBaseCollections.reponses), {
       sortieId: answer.sortieId,
       activities: answer.activities,
@@ -83,13 +123,13 @@ export function useJourney() {
       restoPriceRange: answer.restoPriceRange,
       isowner: answer.isowner,
     });
-  }
+  };
 
-  async function modifyUser(
+  const modifyUser = async (
     userId: string,
     sortieId: string,
     isFullDay: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     const user = auth.currentUser;
     if (!user || user.uid !== userId) return;
 
@@ -110,7 +150,7 @@ export function useJourney() {
     };
 
     await updateDoc(userDoc, updatedData);
-  }
+  };
   const searchRestaurantsByTypes = async (
     types: string[],
     sortieType: ActivityType,
@@ -160,23 +200,77 @@ export function useJourney() {
       throw error;
     }
   };
+
+  const journeyTypeQueryParam = (
+    type: ActivityType
+  ): "REST_FAMILLE" | "REST_AMIS" | "REST_COUPLE" => {
+    switch (type) {
+      case ActivityType.family:
+        return "REST_FAMILLE";
+      case ActivityType.friends:
+        return "REST_AMIS";
+      case ActivityType.romantic:
+        return "REST_COUPLE";
+      default:
+        return "REST_AMIS";
+    }
+  };
+
+  const fetchJourneysByUser = async (): Promise<BaseJourney[]> => {
+    if (!user?.uid) {
+      console.warn("fetchJourneysByUser called with undefined userId");
+      return [];
+    }
+    // TODO : Changer le mot sorties en journeys
+    const journeysCol = collection(db, "sorties");
+    const q = query(journeysCol, where("UTIL_ID", "==", user?.uid));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => {
+      const rawData = doc.data() as JourneyFromDB;
+      rawData.id = doc.id;
+      return mapRawJourneyToJourney(rawData);
+    });
+  };
+  const fetchJourneyById = async ({
+    journeyId,
+  }: {
+    journeyId: string;
+  }): Promise<JourneyData | null> => {
+    // TODO : Changer le mot sorties en journeys
+    const docRef = doc(db, DataBaseCollections.sorties, journeyId);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) return null;
+    const data = snapshot.data();
+    const activitiesId = [];
+    if (data.ACT_FINAL1) activitiesId.push(Number(data.ACT_FINAL1));
+    if (data.ACT_FINAL2) activitiesId.push(Number(data.ACT_FINAL2));
+    const rawData = data as JourneyFromDB;
+    rawData.id = snapshot.id;
+    const journey = mapRawJourneyToJourney(rawData);
+    let restaurant: Restaurant | null = null;
+    if (data.RES_ID) {
+      const restoSnap = await getDoc(
+        doc(db, DataBaseCollections.restaurants, data.RES_ID)
+      );
+
+      if (restoSnap.exists()) {
+        const rawRestaunt = {
+          id: restoSnap.id,
+          ...restoSnap.data(),
+        } as RestaurantFromDB;
+        restaurant = mapRawRestaurantToRestaurant(rawRestaunt);
+      }
+    }
+    return {
+      journey,
+      restaurants: restaurant,
+    };
+  };
   return {
     createJourney,
+    fetchJourneysByUser,
+    fetchJourneyById,
     searchRestaurantsByTypes,
   };
-}
-
-const journeyTypeQueryParam = (
-  type: ActivityType
-): "REST_FAMILLE" | "REST_AMIS" | "REST_COUPLE" => {
-  switch (type) {
-    case ActivityType.family:
-      return "REST_FAMILLE";
-    case ActivityType.friends:
-      return "REST_AMIS";
-    case ActivityType.romantic:
-      return "REST_COUPLE";
-    default:
-      return "REST_AMIS";
-  }
 };

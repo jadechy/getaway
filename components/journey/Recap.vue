@@ -1,16 +1,13 @@
 <script setup lang="ts">
-    // import type { Component } from 'vue'
+export type RecapInformation = {
+  label: string;
+  content: string;
+};
 
-    export type RecapInformation = {
-    label: string
-    content: string
-    // icon: Component // Remplace JSX.Element
-    }
-
-    defineProps<{
-    informations: RecapInformation[]
-    color: string
-    }>()
+defineProps<{
+  informations: RecapInformation[];
+  color: string;
+}>();
 </script>
 
 <template>
@@ -25,7 +22,7 @@
     >
       <div>
         <!-- <component :is="info.icon" class="w-5 h-5" :style="{ color: color }" /> -->
-         <component class="w-5 h-5" :style="{ color: color }" />
+        <component class="w-5 h-5" :style="{ color: color }" />
       </div>
       <div class="flex flex-col">
         <span class="font-medium text-sm">{{ info.label }}</span>

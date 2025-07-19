@@ -12,12 +12,15 @@ import type { Answer } from "~/types/answer";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
 import { formatJourneyFromDbToType } from "~/utils/journey/formatJourney";
 import { ref } from "vue";
-import { ActivityType, type BaseJourney } from "~/types/activity";
 import {
   ACTIVITY_TYPES_SELECT_STRING,
   type ActivityApiType,
 } from "~/utils/const/activityTypes";
-import type { DatabaseJourney } from "~/types/journey";
+import {
+  ActivityType,
+  type BaseJourney,
+  type JourneyFromDB,
+} from "~/types/journey";
 
 const activityList = ref<ActivityApiType[]>([]);
 
@@ -44,7 +47,7 @@ export async function fetchBaseJourneyFromId(
     const journeyDocSnap = await getDoc(journeyDocRef);
 
     if (journeyDocSnap.exists()) {
-      const data = journeyDocSnap.data() as Omit<DatabaseJourney, "id">;
+      const data = journeyDocSnap.data() as Omit<JourneyFromDB, "id">;
       const journey = formatJourneyFromDbToType({ id: journeyId, ...data });
       return journey;
     } else {

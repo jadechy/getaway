@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { FormStepProps } from '~/types/form-types';
+import type { FormStepProps } from "~/types/form-types";
 
 const props = defineProps<FormStepProps>();
 
 const setChoice = (val: boolean) => {
   props.setFormAnswers({
     ...props.formAnswers,
-    journeyIsFullDay: val
+    journeyIsFullDay: val,
   });
 };
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import CategoryCard from "~/components/ui_kit/CategoryCard.vue";
-import { ActivityType } from "~/types/activity";
+import { ActivityType } from "~/types/journey";
 
 const userName = ref("cher ami");
 

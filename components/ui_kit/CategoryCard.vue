@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import type { ActivityType } from "~/types/activity";
-import {
-  getColoredBackgroundFromActivtyType,
-  type Color,
-} from "~/utils/activityType";
+import type { ActivityType } from "~/types/journey";
+import { getTypeIconAndColor, type IconAndColor } from "~/utils/activityType";
 
 const props = defineProps<{
   activityType: ActivityType;
@@ -14,8 +11,8 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const color = computed<Color>(() =>
-  getColoredBackgroundFromActivtyType(props.activityType)
+const color = computed<IconAndColor>(() =>
+  getTypeIconAndColor(props.activityType)
 );
 
 const onClick = () => {
@@ -31,8 +28,8 @@ const onClick = () => {
     class="category-card"
     @click="onClick"
     :style="{
-      backgroundColor: `var(--p-${color.name}-300)`,
-      color: `var(--p-${color.name}-700)`,
+      backgroundColor: `var(--p-${color.color}-300)`,
+      color: `var(--p-${color.color}-700)`,
     }"
   >
     <p class="label">
