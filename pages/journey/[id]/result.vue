@@ -35,6 +35,8 @@ onBeforeMount(async () => {
 
   const journey = await fetchBaseJourneyFromId(journeyId);
   baseJourney.value = journey;
+  console.log('journey:', journey);
+  console.log('baseJourney.value:', baseJourney.value)
 
   const answers = await fetchBaseJourneyAnswersFromId(journeyId);
   if (answers && journey) {
