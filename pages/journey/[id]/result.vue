@@ -92,7 +92,7 @@ async function handleSave() {
 
 <template>
   <div>
-    <Recap :informations="recapJourneyInformation(baseJourney)" color="green" />
+    <Recap :journeys="[baseJourney]" color="green" />
 
     <div>
       <StepPreviewWithReload :reload="shuffleAct1">
