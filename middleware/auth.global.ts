@@ -1,11 +1,9 @@
-// middleware/auth.global.ts
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return;
 
   const { $pinia } = useNuxtApp();
   const userStore = useUserStore($pinia);
 
-  // Attendre que l'initialisation soit terminée
   if (userStore.loading) {
     await new Promise<void>((resolve) => {
       const checkLoading = () => {
@@ -19,11 +17,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     });
   }
 
-  // Maintenant on peut vérifier l'utilisateur en sécurité
   if (
     !userStore.user &&
     to.path !== "/auth/login" &&
-    to.path !== "/auth/register"
+    to.path !== "/auth/register" &&
+    to.path !== "/"
   ) {
     return navigateTo({
       path: "/auth/login",

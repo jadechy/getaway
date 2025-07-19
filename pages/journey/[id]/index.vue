@@ -7,7 +7,7 @@ import { getIconAndColor } from "~/utils/getIconColorFormActivity";
 import { Badge, Tag } from "primevue";
 
 const route = useRoute();
-const { fetchJourneyById } = useJourney();
+const { fetchJourneyById, deleteJourney } = useJourney();
 
 const journeyData = ref<JourneyData | null>(null);
 const loading = ref(true);
@@ -28,20 +28,18 @@ onMounted(async () => {
 
 const typeInfo = computed(() =>
   journeyData.value
-    ? getIconAndColor(journeyData.value.journey.type)
+    ? getIconAndColor(journeyData.value.type)
     : { color: "gray", icon: "pi-question" }
 );
 
 const formattedDate = computed(() =>
   journeyData.value
-    ? getFormattedDate({ date: new Date(journeyData.value.journey.date) })
+    ? getFormattedDate({ date: new Date(journeyData.value.date) })
     : ""
 );
 
 const duration = computed(() =>
-  journeyData.value
-    ? getDurationHours({ journey: journeyData.value.journey })
-    : ""
+  journeyData.value ? getDurationHours({ journey: journeyData.value }) : ""
 );
 </script>
 
@@ -50,23 +48,29 @@ const duration = computed(() =>
   <div v-else-if="error" class="error">{{ error }}</div>
 
   <section v-else-if="journeyData" class="journey-details">
-    <header class="journey-header">
-      <i
-        :class="['pi', typeInfo.icon]"
-        :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
-        aria-hidden="true"
+    <div class="journey-header-container">
+      <div class="journey-header">
+        <i
+          :class="['pi', typeInfo.icon]"
+          :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
+          aria-hidden="true"
+        />
+        <h1>{{ journeyData.title }}</h1>
+      </div>
+      <Button
+        label="Supprimé"
+        @click="deleteJourney({ journeyId: journeyData.id })"
       />
-      <h1>{{ journeyData.journey.title }}</h1>
-    </header>
+    </div>
 
     <p class="date">{{ formattedDate }}</p>
     <div class="tags-row">
       <Tag
-        :severity="journeyData.journey.isFullDay ? 'info' : 'success'"
-        :value="journeyData.journey.isFullDay ? 'Journée complète' : duration"
+        :severity="journeyData.isFullDay ? 'info' : 'success'"
+        :value="journeyData.isFullDay ? 'Journée complète' : duration"
       />
       <Tag
-        v-if="journeyData.journey.needPMR"
+        v-if="journeyData.needPMR"
         severity="warning"
         value="Accessible PMR"
       />
@@ -75,59 +79,49 @@ const duration = computed(() =>
     <section class="activities-section">
       <h2>Activités</h2>
       <ul>
-        <!-- <li
-          v-for="id in journeyData.sortie.activitiesId"
-          :key="id"
+        <li
+          v-for="activity in journeyData.activities"
+          :key="activity.id"
           class="activity-item"
         >
-          <i class="pi pi-map-marker" aria-hidden="true"></i>
-          Activité ID: {{ id }}
-          <a
-            class="external-link"
-            :href="`https://explore.data.gouv.fr/fr/datasets/activite/${id}`"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Voir plus
-            <i class="pi pi-external-link"></i>
-          </a>
-        </li> -->
+          <ActivityCard :activity="activity" />
+        </li>
       </ul>
     </section>
 
     <section class="restaurant-section">
       <h2>Restaurant</h2>
-      <div v-if="journeyData.restaurants" class="restaurant-info">
+      <div v-if="journeyData.restaurant" class="restaurant-info">
         <div class="header">
-          <h3>{{ journeyData.restaurants.title }}</h3>
+          <h3>{{ journeyData.restaurant.title }}</h3>
           <Badge>
-            {{ journeyData.restaurants.prix_min }}€ -
-            {{ journeyData.restaurants.prix_max }}€
+            {{ journeyData.restaurant.prix_min }}€ -
+            {{ journeyData.restaurant.prix_max }}€
           </Badge>
         </div>
-        <p>{{ journeyData.restaurants.type }}</p>
+        <p>{{ journeyData.restaurant.type }}</p>
 
         <div class="tags-row">
           <Tag
-            v-if="journeyData.restaurants.amis"
+            v-if="journeyData.restaurant.amis"
             severity="info"
             value="Amis"
           />
           <Tag
-            v-if="journeyData.restaurants.couple"
+            v-if="journeyData.restaurant.couple"
             severity="warning"
             value="Couple"
           />
           <Tag
-            v-if="journeyData.restaurants.famille"
+            v-if="journeyData.restaurant.famille"
             severity="success"
             value="Famille"
           />
         </div>
         <div>
           <h4>Accès</h4>
-          <p>Métro : {{ journeyData.restaurants.metro }}</p>
-          <MapEmbed :address="journeyData.restaurants.address" />
+          <p>Métro : {{ journeyData.restaurant.metro }}</p>
+          <MapEmbed :address="journeyData.restaurant.address" />
         </div>
       </div>
       <p v-else class="no-restaurant">Aucun restaurant associé</p>
@@ -145,6 +139,12 @@ const duration = computed(() =>
   color: #d9534f;
   text-align: center;
   font-weight: bold;
+}
+
+.journey-header-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .journey-header {
@@ -229,5 +229,10 @@ const duration = computed(() =>
 .header {
   display: flex;
   justify-content: space-between;
+}
+@media (min-width: 768px) {
+  .journey-header-container {
+    flex-direction: row;
+  }
 }
 </style>

@@ -1,26 +1,15 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, updateDoc } from "firebase/firestore";
 import { useFirestore } from "vuefire";
 import type { Answer } from "~/types/answer";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-import { formatJourneyFromDbToType } from "~/utils/journey/formatJourney";
 import { ref } from "vue";
-import {
-  ACTIVITY_TYPES_SELECT_STRING,
-  type ActivityApiType,
-} from "~/utils/const/activityTypes";
+import { ACTIVITY_TYPES_SELECT_STRING } from "~/utils/const/activityTypes";
 import {
   ActivityType,
   type BaseJourney,
   type JourneyFromDB,
 } from "~/types/journey";
+import type { ActivityApiType, JourneyData } from "~/types/activity";
 
 const activityList = ref<ActivityApiType[]>([]);
 
@@ -34,53 +23,6 @@ type CompleteData = {
 type Props = {
   journeyId: string;
   completeData: CompleteData;
-};
-
-export const fetchBaseJourneyFromId = async (
-  journeyId: string
-): Promise<BaseJourney | undefined> => {
-  const db = useFirestore();
-  if (!db) throw new Error("Firestore is not initialized");
-
-  try {
-    const journeyDocRef = doc(db, DataBaseCollections.sorties, journeyId);
-    const journeyDocSnap = await getDoc(journeyDocRef);
-
-    if (journeyDocSnap.exists()) {
-      const data = journeyDocSnap.data() as Omit<JourneyFromDB, "id">;
-      const journey = formatJourneyFromDbToType({ id: journeyId, ...data });
-      return journey;
-    } else {
-      return undefined;
-    }
-  } catch (error) {
-    console.error("Erreur lors du fetch du journey:", error);
-    return undefined;
-  }
-};
-
-export const fetchBaseJourneyAnswersFromId = async (
-  journeyId: string
-): Promise<Answer[] | undefined> => {
-  const db = useFirestore();
-  if (!db) throw new Error("Firestore is not initialized");
-
-  try {
-    const answersColRef = collection(db, DataBaseCollections.reponses);
-    const q = query(answersColRef, where("sortieId", "==", journeyId));
-    const querySnapshot = await getDocs(q);
-
-    const answers: Answer[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data() as Answer;
-      answers.push(data);
-    });
-
-    return answers;
-  } catch (error) {
-    console.error("Erreur lors du fetch des réponses:", error);
-    return undefined;
-  }
 };
 
 const buildActivityQueryParams = (
@@ -139,7 +81,7 @@ const journeyTypePublicFilterValues = (journeyType: ActivityType): string[] => {
 
 export const findActivityFromAnswers = async (
   answers: Answer[],
-  baseJourney: BaseJourney
+  baseJourney: JourneyData
 ): Promise<ActivityApiType[]> => {
   const queryParams = buildActivityQueryParams(answers, baseJourney);
   const response = await fetch(

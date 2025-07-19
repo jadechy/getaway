@@ -1,25 +1,3 @@
-export type ActivityApiType = {
-  id: number;
-  url: string;
-  title: string;
-  description: string;
-  cover_url: string;
-  cover_alt: string;
-  tags: string[];
-  address_name: string;
-  address_street: string;
-  address_zipcode: string;
-  address_city: string;
-  lat_lon: string;
-  pmr: string;
-  transport: string;
-  price_type: string;
-  price_detail: string;
-  access_link: string;
-  title_event: string;
-  audience: string;
-};
-
 const ACTIVITY_TYPES_SELECT: Record<string, boolean> = {
   id: true,
   url: true,
@@ -27,7 +5,7 @@ const ACTIVITY_TYPES_SELECT: Record<string, boolean> = {
   description: true,
   cover_url: true,
   cover_alt: true,
-  tags: true,
+  qfap_tags: true,
   address_name: true,
   address_street: true,
   address_zipcode: true,

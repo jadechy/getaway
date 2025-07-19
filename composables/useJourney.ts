@@ -8,6 +8,7 @@ import {
   query,
   where,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
@@ -23,13 +24,13 @@ import type { JourneyData } from "~/types/activity";
 import {
   mapRawJourneyToJourney,
   mapRawRestaurantToRestaurant,
-} from "~/utils/journey/formatJourney";
+} from "~/utils/formatJourney";
 
 export const useJourney = () => {
   const db = getFirestore();
   const auth = getAuth();
   const { user } = useUserStore();
-
+  const router = useRouter();
   const createJourney = async (
     form: CreateJourneyAnswers
   ): Promise<BaseJourney> => {
@@ -221,7 +222,7 @@ export const useJourney = () => {
     const rawData = data as JourneyFromDB;
     rawData.id = snapshot.id;
     const journey = mapRawJourneyToJourney(rawData);
-    let restaurant: Restaurant | null = null;
+    let restaurant: Restaurant | undefined;
     if (data.RES_ID) {
       const restoSnap = await getDoc(
         doc(db, DataBaseCollections.restaurants, data.RES_ID)
@@ -236,15 +237,68 @@ export const useJourney = () => {
       }
     }
     return {
-      journey,
-      restaurants: restaurant,
+      ...journey,
+      restaurant: restaurant,
     };
   };
+  const fetchAnswersByJourneyId = async ({
+    journeyId,
+  }: {
+    journeyId: string;
+  }): Promise<Answer[] | undefined> => {
+    try {
+      const answersColRef = collection(db, DataBaseCollections.reponses);
+      const q = query(answersColRef, where("sortieId", "==", journeyId));
+      const querySnapshot = await getDocs(q);
 
+      const answers: Answer[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data() as Answer;
+        answers.push(data);
+      });
+
+      return answers;
+    } catch (error) {
+      console.error("Erreur lors du fetch des réponses:", error);
+      return undefined;
+    }
+  };
+
+  const deleteJourney = async ({ journeyId }: { journeyId: string }) => {
+    try {
+      if (!auth.currentUser) return;
+
+      const journeyRef = doc(db, DataBaseCollections.sorties, journeyId);
+      await deleteDoc(journeyRef);
+
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) return;
+
+      const userData = userSnap.data() as FirestoreUser;
+      const sorties = userData.util_sorties || [];
+
+      const updatedSorties = sorties.filter((s) => s.sor_id !== journeyId);
+
+      await updateDoc(userRef, {
+        ...userData,
+        util_sorties: updatedSorties,
+      });
+
+      console.log("Sortie supprimée avec succès !");
+      router.push("/journey/all");
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la sortie :", error);
+      throw error;
+    }
+  };
   return {
     createJourney,
     fetchJourneysByUser,
     fetchJourneyById,
     searchRestaurantsByTypes,
+    fetchAnswersByJourneyId,
+    deleteJourney,
   };
 };
