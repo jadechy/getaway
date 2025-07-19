@@ -23,7 +23,7 @@ const router = useRouter();
         >
       </Button>
       <Button asChild v-slot="slotProps" variant="link">
-        <RouterLink to="/profile" :class="slotProps.class">Profile</RouterLink>
+        <RouterLink to="/profil" :class="slotProps.class">Profile</RouterLink>
       </Button>
     </nav>
   </header>
