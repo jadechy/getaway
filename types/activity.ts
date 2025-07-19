@@ -1,3 +1,4 @@
+import type { ActivityApiType } from "~/utils/const/activityTypes";
 import type { BaseJourney } from "./journey";
 import type { Restaurant } from "./restaurant";
 
@@ -6,7 +7,7 @@ export type Journey = BaseJourney & {
   restaurantId: string;
 };
 
-export type JourneyData = {
-  journey: BaseJourney;
-  restaurants: Restaurant | null;
+export type JourneyData = BaseJourney & {
+  restaurant?: Restaurant;
+  activities?: ActivityApiType;
 };

@@ -2,43 +2,33 @@
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import Recap from "@/components/journey/Recap.vue";
-import StepPreview from "@/components/journey/StepPreview.vue";
-import StepPreviewWithReload from "@/components/journey/StepPreviewWithReload.vue";
 import {
   completeJourney,
-  fetchBaseJourneyAnswersFromId,
-  fetchBaseJourneyFromId,
   findActivityFromAnswers,
 } from "~/composables/service/journeyService";
-import { recapJourneyInformation } from "~/utils/journey/recapJourney";
-import {
-  formatActivityFromAPIToStep,
-  formatRestaurantFromBDDToStep,
-} from "@/utils/journey/formatStepJourney";
+import type { JourneyData } from "~/types/activity";
 
 const route = useRoute();
 const router = useRouter();
 
 const journeyId = route.params.id as string;
 
+const journey = ref<JourneyData | null>(null);
 const baseJourney = ref<any | null>(null);
 const activityList = ref<any[] | null>(null);
 const restaurantsList = ref<any[] | null>(null);
-
 const activity1 = ref(0);
 const activity2 = ref(29);
 const restaurant = ref(0);
-const { searchRestaurantsByTypes } = useJourney();
-onBeforeMount(async () => {
-  useAuth();
-
-  const journey = await fetchBaseJourneyFromId(journeyId);
+const { searchRestaurantsByTypes, fetchJourneyById, fetchAnswersByJourneyId } =
+  useJourney();
+onMounted(async () => {
+  journey.value = await fetchJourneyById({ journeyId });
   baseJourney.value = journey;
+  const answers = await fetchAnswersByJourneyId({ journeyId });
 
-  const answers = await fetchBaseJourneyAnswersFromId(journeyId);
-  if (answers && journey) {
-    activityList.value = await findActivityFromAnswers(answers, journey);
+  if (answers && journey.value) {
+    activityList.value = await findActivityFromAnswers(answers, journey.value);
 
     const allAnswersType = Array.from(
       new Set(answers.flatMap((a: any) => a.restaurant))
@@ -47,13 +37,11 @@ onBeforeMount(async () => {
     const minPrice = Math.min(...priceList);
     restaurantsList.value = await searchRestaurantsByTypes(
       allAnswersType,
-      journey.type,
+      journey.value.type,
       minPrice
     );
   }
 });
-
-console.log(baseJourney);
 
 function shuffleAct1() {
   activity1.value = (activity1.value + 1) % (activityList.value?.length || 1);
@@ -92,10 +80,10 @@ async function handleSave() {
 
 <template>
   <div>
-    <Recap :journeys="[baseJourney]" color="green" />
-
-    <div>
-      <StepPreviewWithReload :reload="shuffleAct1">
+    <CardJouney :journey="journey" v-if="journey" />
+    <div v-if="activityList">
+      {{ activityList[0] }}
+      <!-- <StepPreviewWithReload :reload="shuffleAct1">
         <StepPreview
           :step="formatActivityFromAPIToStep(activityList?.[activity1], true)"
         />
@@ -119,10 +107,10 @@ async function handleSave() {
         <StepPreview
           :step="formatActivityFromAPIToStep(activityList?.[activity2], false)"
         />
-      </StepPreviewWithReload>
+      </StepPreviewWithReload> -->
     </div>
 
-    <Button
+    <!-- <Button
       label="Régénérer"
       @click="handleRegenerate"
       backgroundColor="#333"
@@ -135,7 +123,7 @@ async function handleSave() {
           : 'Enregistrer la demi-journée'
       "
       @click="handleSave"
-    />
+    /> -->
   </div>
 </template>
 

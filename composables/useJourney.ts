@@ -221,7 +221,7 @@ export const useJourney = () => {
     const rawData = data as JourneyFromDB;
     rawData.id = snapshot.id;
     const journey = mapRawJourneyToJourney(rawData);
-    let restaurant: Restaurant | null = null;
+    let restaurant: Restaurant | undefined;
     if (data.RES_ID) {
       const restoSnap = await getDoc(
         doc(db, DataBaseCollections.restaurants, data.RES_ID)
@@ -236,15 +236,38 @@ export const useJourney = () => {
       }
     }
     return {
-      journey,
-      restaurants: restaurant,
+      ...journey,
+      restaurant: restaurant,
     };
   };
+  const fetchAnswersByJourneyId = async ({
+    journeyId,
+  }: {
+    journeyId: string;
+  }): Promise<Answer[] | undefined> => {
+    try {
+      const answersColRef = collection(db, DataBaseCollections.reponses);
+      const q = query(answersColRef, where("sortieId", "==", journeyId));
+      const querySnapshot = await getDocs(q);
 
+      const answers: Answer[] = [];
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data());
+        const data = doc.data() as Answer;
+        answers.push(data);
+      });
+
+      return answers;
+    } catch (error) {
+      console.error("Erreur lors du fetch des réponses:", error);
+      return undefined;
+    }
+  };
   return {
     createJourney,
     fetchJourneysByUser,
     fetchJourneyById,
     searchRestaurantsByTypes,
+    fetchAnswersByJourneyId,
   };
 };
