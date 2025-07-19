@@ -3,13 +3,7 @@ import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 
-definePageMeta({
-  middleware: ["auth"],
-});
-
-const userStore = useUserStore();
-userStore.init();
-const { user } = storeToRefs(userStore);
+const { user } = storeToRefs(useUserStore());
 
 const router = useRouter();
 

@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-import type { createJourneyAnswers, Answer } from "~/types/answer";
+import type { CreateJourneyAnswers, Answer } from "~/types/answer";
 import type { FirestoreUser } from "~/types/user";
 import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
 import {
@@ -31,7 +31,7 @@ export const useJourney = () => {
   const { user } = useUserStore();
 
   const createJourney = async (
-    form: createJourneyAnswers
+    form: CreateJourneyAnswers
   ): Promise<BaseJourney> => {
     const formattedDate = form.journeyDate.toLocaleDateString("fr-FR");
     const formattedStart = form.journeyStartingTime.toLocaleTimeString(
@@ -65,10 +65,10 @@ export const useJourney = () => {
     await createAnswer({
       id: null,
       sortieId,
-      activities: form.answerActivityOptions,
-      activityPriceRange: form.answerPriceRange,
-      restaurant: form.answerRestaurantTypes,
-      restoPriceRange: form.answerRestaurantPriceRange,
+      activities: form.activity.types,
+      activityPriceRange: form.activity.priceRange,
+      restaurant: form.restaurant.types,
+      restoPriceRange: form.restaurant.priceRange,
       isowner: true,
     });
 

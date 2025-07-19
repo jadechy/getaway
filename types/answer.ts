@@ -1,6 +1,9 @@
 import type { ActivityType } from "./journey";
-
-export interface createJourneyAnswers {
+export type TypedPriceRange = {
+  types: string[];
+  priceRange: [number, number];
+};
+export interface CreateJourneyAnswers {
   userId: string;
 
   journeyName: string;
@@ -13,11 +16,8 @@ export interface createJourneyAnswers {
 
   journeyIsFullDay: boolean;
 
-  answerActivityOptions: string[];
-  answerPriceRange: [number, number];
-
-  answerRestaurantTypes: string[];
-  answerRestaurantPriceRange: [number, number];
+  activity: TypedPriceRange;
+  restaurant: TypedPriceRange;
 }
 
 export type Answer = {
