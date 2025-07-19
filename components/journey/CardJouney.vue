@@ -7,7 +7,6 @@ interface Props {
   journey: JourneyData;
 }
 const props = defineProps<Props>();
-console.log(props.journey);
 
 const typeInfo = computed(() => getIconAndColor(props.journey.type));
 

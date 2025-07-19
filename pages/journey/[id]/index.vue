@@ -7,7 +7,7 @@ import { getIconAndColor } from "~/utils/getIconColorFormActivity";
 import { Badge, Tag } from "primevue";
 
 const route = useRoute();
-const { fetchJourneyById } = useJourney();
+const { fetchJourneyById, deleteJourney } = useJourney();
 
 const journeyData = ref<JourneyData | null>(null);
 const loading = ref(true);
@@ -48,14 +48,20 @@ const duration = computed(() =>
   <div v-else-if="error" class="error">{{ error }}</div>
 
   <section v-else-if="journeyData" class="journey-details">
-    <header class="journey-header">
-      <i
-        :class="['pi', typeInfo.icon]"
-        :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
-        aria-hidden="true"
+    <div class="journey-header-container">
+      <div class="journey-header">
+        <i
+          :class="['pi', typeInfo.icon]"
+          :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
+          aria-hidden="true"
+        />
+        <h1>{{ journeyData.title }}</h1>
+      </div>
+      <Button
+        label="Supprimé"
+        @click="deleteJourney({ journeyId: journeyData.id })"
       />
-      <h1>{{ journeyData.title }}</h1>
-    </header>
+    </div>
 
     <p class="date">{{ formattedDate }}</p>
     <div class="tags-row">
@@ -73,23 +79,13 @@ const duration = computed(() =>
     <section class="activities-section">
       <h2>Activités</h2>
       <ul>
-        <!-- <li
-          v-for="id in journeyData.sortie.activitiesId"
-          :key="id"
+        <li
+          v-for="activity in journeyData.activities"
+          :key="activity.id"
           class="activity-item"
         >
-          <i class="pi pi-map-marker" aria-hidden="true"></i>
-          Activité ID: {{ id }}
-          <a
-            class="external-link"
-            :href="`https://explore.data.gouv.fr/fr/datasets/activite/${id}`"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Voir plus
-            <i class="pi pi-external-link"></i>
-          </a>
-        </li> -->
+          <ActivityCard :activity="activity" />
+        </li>
       </ul>
     </section>
 
@@ -143,6 +139,12 @@ const duration = computed(() =>
   color: #d9534f;
   text-align: center;
   font-weight: bold;
+}
+
+.journey-header-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .journey-header {
@@ -227,5 +229,10 @@ const duration = computed(() =>
 .header {
   display: flex;
   justify-content: space-between;
+}
+@media (min-width: 768px) {
+  .journey-header-container {
+    flex-direction: row;
+  }
 }
 </style>

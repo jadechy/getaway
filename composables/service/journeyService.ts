@@ -1,27 +1,15 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, updateDoc } from "firebase/firestore";
 import { useFirestore } from "vuefire";
 import type { Answer } from "~/types/answer";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-import { formatJourneyFromDbToType } from "~/utils/journey/formatJourney";
 import { ref } from "vue";
-import {
-  ACTIVITY_TYPES_SELECT_STRING,
-  type ActivityApiType,
-} from "~/utils/const/activityTypes";
+import { ACTIVITY_TYPES_SELECT_STRING } from "~/utils/const/activityTypes";
 import {
   ActivityType,
   type BaseJourney,
   type JourneyFromDB,
 } from "~/types/journey";
-import type { JourneyData } from "~/types/activity";
+import type { ActivityApiType, JourneyData } from "~/types/activity";
 
 const activityList = ref<ActivityApiType[]>([]);
 
@@ -36,29 +24,6 @@ type Props = {
   journeyId: string;
   completeData: CompleteData;
 };
-
-// export const fetchBaseJourneyFromId = async (
-//   journeyId: string
-// ): Promise<BaseJourney | undefined> => {
-//   const db = useFirestore();
-//   if (!db) throw new Error("Firestore is not initialized");
-
-//   try {
-//     const journeyDocRef = doc(db, DataBaseCollections.sorties, journeyId);
-//     const journeyDocSnap = await getDoc(journeyDocRef);
-
-//     if (journeyDocSnap.exists()) {
-//       const data = journeyDocSnap.data() as Omit<JourneyFromDB, "id">;
-//       const journey = formatJourneyFromDbToType({ id: journeyId, ...data });
-//       return journey;
-//     } else {
-//       return undefined;
-//     }
-//   } catch (error) {
-//     console.error("Erreur lors du fetch du journey:", error);
-//     return undefined;
-//   }
-// };
 
 const buildActivityQueryParams = (
   answers: Answer[],
