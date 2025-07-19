@@ -1,21 +1,39 @@
-import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
-import { DataBaseCollections } from '~/utils/const/databaseCollections'
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { DataBaseCollections } from "~/utils/const/databaseCollections";
 
-import type { createJourneyAnswers, Answer } from '~/types/answer'
+import type { createJourneyAnswers, Answer } from "~/types/answer";
 
-import type { FirestoreUser } from '~/types/user'
-import { ActivityType, type BaseJourney, type Restaurant } from '~/types/activity'
-
+import type { FirestoreUser } from "~/types/user";
+import type { Restaurant } from "~/types/restaurant";
+import { ActivityType, type BaseJourney } from "~/types/activity";
 
 export function useJourney() {
-  const db = getFirestore()
-  const auth = getAuth()
+  const db = getFirestore();
+  const auth = getAuth();
 
-  async function createJourney(form: createJourneyAnswers): Promise<BaseJourney> {
-    const formattedDate = form.journeyDate.toLocaleDateString('fr-FR')
-    const formattedStart = form.journeyStartingTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    const formattedEnd = form.journeyEndingTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  async function createJourney(
+    form: createJourneyAnswers
+  ): Promise<BaseJourney> {
+    const formattedDate = form.journeyDate.toLocaleDateString("fr-FR");
+    const formattedStart = form.journeyStartingTime.toLocaleTimeString(
+      "fr-FR",
+      { hour: "2-digit", minute: "2-digit" }
+    );
+    const formattedEnd = form.journeyEndingTime.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     const docRef = await addDoc(collection(db, DataBaseCollections.sorties), {
       UTIL_ID: form.userId,
@@ -26,12 +44,12 @@ export function useJourney() {
       SOR_HEURE_FIN: formattedEnd,
       SOR_NB_PRSN: form.journeyMemberNumber,
       SOR_PMR: form.journeyNeedPMR,
-      SOR_TYPE: form.journeyActivityType
-    })
+      SOR_TYPE: form.journeyActivityType,
+    });
 
-    const sortieId = docRef.id
+    const sortieId = docRef.id;
 
-    await modifyUser(form.userId, sortieId, form.journeyIsFullDay)
+    await modifyUser(form.userId, sortieId, form.journeyIsFullDay);
 
     await createAnswer({
       id: null,
@@ -40,8 +58,8 @@ export function useJourney() {
       activityPriceRange: form.answerPriceRange,
       restaurant: form.answerRestaurantTypes,
       restoPriceRange: form.answerRestaurantPriceRange,
-      isowner: true
-    })
+      isowner: true,
+    });
 
     return {
       id: sortieId,
@@ -52,8 +70,8 @@ export function useJourney() {
       timeFinish: form.journeyEndingTime,
       isFullDay: form.journeyIsFullDay,
       ownerId: form.userId,
-      needPMR: form.journeyNeedPMR
-    }
+      needPMR: form.journeyNeedPMR,
+    };
   }
 
   async function createAnswer(answer: Answer): Promise<void> {
@@ -63,97 +81,102 @@ export function useJourney() {
       activityPriceRange: answer.activityPriceRange,
       restaurant: answer.restaurant,
       restoPriceRange: answer.restoPriceRange,
-      isowner: answer.isowner
-    })
+      isowner: answer.isowner,
+    });
   }
 
-  async function modifyUser(userId: string, sortieId: string, isFullDay: boolean): Promise<void> {
-    const user = auth.currentUser
-    if (!user || user.uid !== userId) return
+  async function modifyUser(
+    userId: string,
+    sortieId: string,
+    isFullDay: boolean
+  ): Promise<void> {
+    const user = auth.currentUser;
+    if (!user || user.uid !== userId) return;
 
-    const userDoc = doc(db, 'users', userId)
-    const userSnap = await getDoc(userDoc)
+    const userDoc = doc(db, "users", userId);
+    const userSnap = await getDoc(userDoc);
 
-    if (!userSnap.exists()) return
+    if (!userSnap.exists()) return;
 
-    const userData = userSnap.data() as FirestoreUser
-    const sorties = userData.util_sorties || []
+    const userData = userSnap.data() as FirestoreUser;
+    const sorties = userData.util_sorties || [];
 
     const updatedData = {
       ...userData,
       util_sorties: [
         ...sorties,
-        { sor_id: sortieId, nb_activité: isFullDay ? 2 : 1 }
-      ]
+        { sor_id: sortieId, nb_activité: isFullDay ? 2 : 1 },
+      ],
+    };
+
+    await updateDoc(userDoc, updatedData);
+  }
+  const searchRestaurantsByTypes = async (
+    types: string[],
+    sortieType: ActivityType,
+    prixMax: number
+  ): Promise<Restaurant[]> => {
+    try {
+      const restaurantsCollectionRef = collection(
+        db,
+        DataBaseCollections.restaurants
+      );
+
+      let q;
+
+      if (sortieType === ActivityType.random) {
+        q = query(restaurantsCollectionRef);
+      } else {
+        q = query(
+          restaurantsCollectionRef,
+          where("REST_TYPE", "in", types),
+          where(journeyTypeQueryParam(sortieType), "==", true)
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+
+      const matchingRestaurants = querySnapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            address: data.REST_ADRESSE,
+            amis: data.REST_AMIS,
+            couple: data.REST_COUPLE,
+            famille: data.REST_FAMILLE,
+            metro: data.REST_METRO,
+            title: data.REST_NOM,
+            prix_max: Number(data.REST_PRIX_MAX),
+            prix_min: Number(data.REST_PRIX_MIN),
+            type: data.REST_TYPE,
+          } as Restaurant;
+        })
+        .filter((restaurant) => restaurant.prix_max <= prixMax);
+
+      return matchingRestaurants;
+    } catch (error) {
+      console.error("Erreur lors de la recherche des restaurants :", error);
+      throw error;
     }
-
-    await updateDoc(userDoc, updatedData)
-  }
-
+  };
   return {
-    createJourney
-  }
+    createJourney,
+    searchRestaurantsByTypes,
+  };
 }
 
-function journeyTypeQueryParam(type: ActivityType): 'REST_FAMILLE' | 'REST_AMIS' | 'REST_COUPLE' {
+const journeyTypeQueryParam = (
+  type: ActivityType
+): "REST_FAMILLE" | "REST_AMIS" | "REST_COUPLE" => {
   switch (type) {
     case ActivityType.family:
-      return 'REST_FAMILLE'
+      return "REST_FAMILLE";
     case ActivityType.friends:
-      return 'REST_AMIS'
+      return "REST_AMIS";
     case ActivityType.romantic:
-      return 'REST_COUPLE'
+      return "REST_COUPLE";
     default:
-      return 'REST_AMIS'
+      return "REST_AMIS";
   }
-}
-
-export async function searchRestaurantsByTypes(
-  types: string[],
-  sortieType: ActivityType,
-  prixMax: number
-): Promise<Restaurant[]> {
-  const db = useFirestore()
-  if (!db) throw new Error('Firestore is not initialized')
-
-  try {
-    const restaurantsCollectionRef = collection(db, DataBaseCollections.restaurants)
-
-    let q
-
-    if (sortieType === ActivityType.random) {
-      q = query(restaurantsCollectionRef)
-    } else {
-      q = query(
-        restaurantsCollectionRef,
-        where('REST_TYPE', 'in', types),
-        where(journeyTypeQueryParam(sortieType), '==', true)
-      )
-    }
-
-    const querySnapshot = await getDocs(q)
-
-    const matchingRestaurants = querySnapshot.docs
-      .map(doc => {
-        const data = doc.data()
-        return {
-          id: doc.id,
-          address: data.REST_ADRESSE,
-          amis: data.REST_AMIS,
-          couple: data.REST_COUPLE,
-          famille: data.REST_FAMILLE,
-          metro: data.REST_METRO,
-          title: data.REST_NOM,
-          prix_max: Number(data.REST_PRIX_MAX),
-          prix_min: Number(data.REST_PRIX_MIN),
-          type: data.REST_TYPE
-        } as Restaurant
-      })
-      .filter(restaurant => restaurant.prix_max <= prixMax)
-
-    return matchingRestaurants
-  } catch (error) {
-    console.error('Erreur lors de la recherche des restaurants :', error)
-    throw error
-  }
-}
+};
