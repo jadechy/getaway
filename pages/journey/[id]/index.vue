@@ -28,20 +28,18 @@ onMounted(async () => {
 
 const typeInfo = computed(() =>
   journeyData.value
-    ? getIconAndColor(journeyData.value.journey.type)
+    ? getIconAndColor(journeyData.value.type)
     : { color: "gray", icon: "pi-question" }
 );
 
 const formattedDate = computed(() =>
   journeyData.value
-    ? getFormattedDate({ date: new Date(journeyData.value.journey.date) })
+    ? getFormattedDate({ date: new Date(journeyData.value.date) })
     : ""
 );
 
 const duration = computed(() =>
-  journeyData.value
-    ? getDurationHours({ journey: journeyData.value.journey })
-    : ""
+  journeyData.value ? getDurationHours({ journey: journeyData.value }) : ""
 );
 </script>
 
@@ -56,17 +54,17 @@ const duration = computed(() =>
         :style="{ color: `var(--p-${typeInfo.color}-500)`, fontSize: '2rem' }"
         aria-hidden="true"
       />
-      <h1>{{ journeyData.journey.title }}</h1>
+      <h1>{{ journeyData.title }}</h1>
     </header>
 
     <p class="date">{{ formattedDate }}</p>
     <div class="tags-row">
       <Tag
-        :severity="journeyData.journey.isFullDay ? 'info' : 'success'"
-        :value="journeyData.journey.isFullDay ? 'Journée complète' : duration"
+        :severity="journeyData.isFullDay ? 'info' : 'success'"
+        :value="journeyData.isFullDay ? 'Journée complète' : duration"
       />
       <Tag
-        v-if="journeyData.journey.needPMR"
+        v-if="journeyData.needPMR"
         severity="warning"
         value="Accessible PMR"
       />
@@ -97,37 +95,37 @@ const duration = computed(() =>
 
     <section class="restaurant-section">
       <h2>Restaurant</h2>
-      <div v-if="journeyData.restaurants" class="restaurant-info">
+      <div v-if="journeyData.restaurant" class="restaurant-info">
         <div class="header">
-          <h3>{{ journeyData.restaurants.title }}</h3>
+          <h3>{{ journeyData.restaurant.title }}</h3>
           <Badge>
-            {{ journeyData.restaurants.prix_min }}€ -
-            {{ journeyData.restaurants.prix_max }}€
+            {{ journeyData.restaurant.prix_min }}€ -
+            {{ journeyData.restaurant.prix_max }}€
           </Badge>
         </div>
-        <p>{{ journeyData.restaurants.type }}</p>
+        <p>{{ journeyData.restaurant.type }}</p>
 
         <div class="tags-row">
           <Tag
-            v-if="journeyData.restaurants.amis"
+            v-if="journeyData.restaurant.amis"
             severity="info"
             value="Amis"
           />
           <Tag
-            v-if="journeyData.restaurants.couple"
+            v-if="journeyData.restaurant.couple"
             severity="warning"
             value="Couple"
           />
           <Tag
-            v-if="journeyData.restaurants.famille"
+            v-if="journeyData.restaurant.famille"
             severity="success"
             value="Famille"
           />
         </div>
         <div>
           <h4>Accès</h4>
-          <p>Métro : {{ journeyData.restaurants.metro }}</p>
-          <MapEmbed :address="journeyData.restaurants.address" />
+          <p>Métro : {{ journeyData.restaurant.metro }}</p>
+          <MapEmbed :address="journeyData.restaurant.address" />
         </div>
       </div>
       <p v-else class="no-restaurant">Aucun restaurant associé</p>

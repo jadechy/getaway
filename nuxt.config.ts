@@ -54,8 +54,8 @@ export default defineNuxtConfig({
     { path: "~/components", pathPrefix: false },
     { path: "~/components/ui_kit", pathPrefix: false },
     { path: "~/components/journey", pathPrefix: false },
-    { path: "~/components/general", pathPrefix: false },
-    { path: "~/components/form", pathPrefix: false },
+    { path: "~/components/activity", pathPrefix: false },
+    { path: "~/components/restaurant", pathPrefix: false },
   ],
 
   vite: {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { getIconAndColor } from "../../utils/getIconColorFormActivity";
-import type { BaseJourney } from "~/types/journey";
+import type { JourneyData } from "~/types/activity";
 
 interface Props {
-  journey: BaseJourney;
+  journey: JourneyData;
 }
 const props = defineProps<Props>();
 console.log(props.journey);
@@ -21,7 +21,6 @@ const formattedDate = computed(() =>
 </script>
 
 <template>
-  <div></div>
   <Card
     class="journey-card"
     :style="{ borderColor: `var(--p-${typeInfo.color}-500)` }"
@@ -53,6 +52,7 @@ const formattedDate = computed(() =>
 
 <style scoped>
 .journey-card {
+  width: 100%;
   cursor: pointer;
   border-width: 2px;
   border-style: solid;

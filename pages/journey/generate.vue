@@ -3,8 +3,8 @@ import { ref, type Component } from "vue";
 import type { CreateJourneyAnswers } from "~/types/answer";
 import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
-import FormIntro from "~/components/form/FormIntro.vue";
-import FormTypeRange from "~/components/form/FormTypeRange.vue";
+import FormTypeRange from "~/components/journey/form/FormTypeRange.vue";
+import FormIntro from "~/components/journey/form/FormIntro.vue";
 
 const { createJourney } = useJourney();
 
@@ -59,7 +59,6 @@ const steps: Step[] = [
 ];
 
 const handleSubmit = async (answers: CreateJourneyAnswers) => {
-  console.log("Soumission des réponses :", answers);
   if (!formAnswers.value) return;
   try {
     const journey = await createJourney(formAnswers.value);
@@ -71,57 +70,59 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
 </script>
 
 <template>
-  <p v-if="userStore.loading">Chargement en cours...</p>
-  <p v-else-if="!userStore.user">Utilisateur non connecté.</p>
-  <template v-else>
-    <Stepper :value="0">
-      <StepList>
-        <Step v-for="(step, i) in steps" :key="i" :value="i">{{
-          step.label
-        }}</Step>
-      </StepList>
-      <StepPanels>
-        <StepPanel
-          class="journey-stepper"
-          v-for="(step, i) in steps"
-          :key="i"
-          :value="i"
-          v-slot="{ activateCallback }"
-        >
-          <component
-            :is="step.component"
-            v-model="formAnswers"
-            :isActivity="step.label === 'Activité'"
-          />
-          <div class="btns">
-            <Button
-              :disabled="i === 0"
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              @click="activateCallback(i - 1)"
+  <ClientOnly>
+    <p v-if="userStore.loading">Chargement en cours...</p>
+    <p v-else-if="!userStore.user">Utilisateur non connecté.</p>
+    <template v-else>
+      <Stepper :value="0">
+        <StepList>
+          <Step v-for="(step, i) in steps" :key="i" :value="i">{{
+            step.label
+          }}</Step>
+        </StepList>
+        <StepPanels>
+          <StepPanel
+            class="journey-stepper"
+            v-for="(step, i) in steps"
+            :key="i"
+            :value="i"
+            v-slot="{ activateCallback }"
+          >
+            <component
+              :is="step.component"
+              v-model="formAnswers"
+              :isActivity="step.label === 'Activité'"
             />
-            <Button
-              v-if="i !== steps.length - 1"
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              @click="activateCallback(i + 1)"
-            />
-            <Button
-              v-if="i === steps.length - 1"
-              @click="handleSubmit(formAnswers)"
-              :label="
-                formAnswers.journeyIsFullDay
-                  ? 'Génère ton incroyable journée !'
-                  : 'Génère ton incroyable demi-journée !'
-              "
-            />
-          </div>
-        </StepPanel>
-      </StepPanels>
-    </Stepper>
-  </template>
+            <div class="btns">
+              <Button
+                :disabled="i === 0"
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                @click="activateCallback(i - 1)"
+              />
+              <Button
+                v-if="i !== steps.length - 1"
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                @click="activateCallback(i + 1)"
+              />
+              <Button
+                v-if="i === steps.length - 1"
+                @click="handleSubmit(formAnswers)"
+                :label="
+                  formAnswers.journeyIsFullDay
+                    ? 'Génère ton incroyable journée !'
+                    : 'Génère ton incroyable demi-journée !'
+                "
+              />
+            </div>
+          </StepPanel>
+        </StepPanels>
+      </Stepper>
+    </template>
+  </ClientOnly>
 </template>
 
 <style scoped>
