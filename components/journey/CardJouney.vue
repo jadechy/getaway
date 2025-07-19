@@ -7,6 +7,7 @@ interface Props {
   journey: JourneyData;
 }
 const props = defineProps<Props>();
+console.log(props.journey);
 
 const typeInfo = computed(() => getIconAndColor(props.journey.type));
 
@@ -20,7 +21,6 @@ const formattedDate = computed(() =>
 </script>
 
 <template>
-  <div></div>
   <Card
     class="journey-card"
     :style="{ borderColor: `var(--p-${typeInfo.color}-500)` }"
@@ -52,6 +52,7 @@ const formattedDate = computed(() =>
 
 <style scoped>
 .journey-card {
+  width: 100%;
   cursor: pointer;
   border-width: 2px;
   border-style: solid;

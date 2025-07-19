@@ -27,7 +27,7 @@ const ACTIVITY_TYPES_SELECT: Record<string, boolean> = {
   description: true,
   cover_url: true,
   cover_alt: true,
-  tags: true,
+  qfap_tags: true,
   address_name: true,
   address_street: true,
   address_zipcode: true,

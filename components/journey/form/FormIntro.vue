@@ -65,18 +65,15 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
     <div class="form-group">
       <label>Type de journée</label>
       <SelectButton
-        v-model="form.journeyNeedPMR"
-        :options="[true, false]"
+        v-model="form.journeyIsFullDay"
+        :options="[
+          { label: 'Journée complète', value: true },
+          { label: 'Demi-journée', value: false },
+        ]"
+        optionLabel="label"
+        optionValue="value"
         class="form-select"
-      >
-        <template #option="slotProps">
-          <span>
-            {{
-              slotProps.option === true ? "Journée complète" : "Demi-journée"
-            }}
-          </span>
-        </template>
-      </SelectButton>
+      />
     </div>
     <div class="form-group">
       <div class="label-price-range">
@@ -95,19 +92,13 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       />
     </div>
 
-    <div class="form-group">
+    <div class="form-group pmr">
       <label>Besoin PMR</label>
-      <SelectButton
+      <ToggleButton
         v-model="form.journeyNeedPMR"
-        :options="[true, false]"
-        class="form-select"
-      >
-        <template #option="slotProps">
-          <span>
-            {{ slotProps.option === true ? "PMR" : "Pas PMR" }}
-          </span>
-        </template>
-      </SelectButton>
+        onLabel="PMR"
+        offLabel="Non PMR"
+      />
     </div>
   </div>
 </template>
@@ -131,5 +122,9 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
 
 .form-slider {
   padding-top: 0.5rem;
+}
+
+.pmr button {
+  width: fit-content;
 }
 </style>

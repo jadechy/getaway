@@ -40,6 +40,7 @@ onMounted(async () => {
       journey.value.type,
       minPrice
     );
+    console.log(restaurantsList.value[0]);
   }
 });
 
@@ -79,52 +80,84 @@ async function handleSave() {
 </script>
 
 <template>
-  <div>
-    <CardJouney :journey="journey" v-if="journey" />
-    <div v-if="activityList">
-      {{ activityList[0] }}
-      <!-- <StepPreviewWithReload :reload="shuffleAct1">
-        <StepPreview
-          :step="formatActivityFromAPIToStep(activityList?.[activity1], true)"
+  <div v-if="restaurantsList">
+    <section>
+      <CardJouney :journey="journey" v-if="journey" />
+      <div class="btns">
+        <Button
+          label="Régénérer"
+          @click="handleRegenerate"
+          backgroundColor="#333"
         />
-      </StepPreviewWithReload>
 
-      <StepPreviewWithReload
-        v-if="restaurantsList?.length"
-        :reload="shuffleRest"
-      >
-        <StepPreview
-          :step="formatRestaurantFromBDDToStep(restaurantsList[restaurant])"
+        <Button label="Enregistrer la sortie" @click="handleSave" />
+      </div>
+    </section>
+
+    <article id="restaurant">
+      <h2>Le restaurant</h2>
+      <RestaurantDisplay :restaurant="restaurantsList[restaurant]" />
+    </article>
+
+    <article v-if="activityList" id="activities">
+      <h2>Les activités</h2>
+      <div>
+        <ActivityCard :activity="activityList[activity1]" />
+        <ActivityCard
+          :activity="activityList[activity2]"
+          v-if="journey?.isFullDay"
         />
-      </StepPreviewWithReload>
-
-      <p v-else>Aucun restaurant trouvé...</p>
-
-      <StepPreviewWithReload
-        v-if="baseJourney?.isFullDay"
-        :reload="shuffleAct2"
-      >
-        <StepPreview
-          :step="formatActivityFromAPIToStep(activityList?.[activity2], false)"
-        />
-      </StepPreviewWithReload> -->
-    </div>
-
-    <!-- <Button
-      label="Régénérer"
-      @click="handleRegenerate"
-      backgroundColor="#333"
-    />
-
-    <Button
-      :label="
-        baseJourney?.isFullDay
-          ? 'Enregistrer la journée'
-          : 'Enregistrer la demi-journée'
-      "
-      @click="handleSave"
-    /> -->
+      </div>
+    </article>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#restaurant {
+  margin-top: 4rem;
+}
+#activities {
+  & > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+  margin-block: 4rem;
+}
+.btns {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Tablette (≥ 768px) */
+@media (min-width: 768px) {
+  .btns {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #activities > div {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+}
+
+/* Desktop (≥ 1024px) */
+@media (min-width: 1024px) {
+  section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .btns {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+</style>
