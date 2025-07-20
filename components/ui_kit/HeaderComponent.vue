@@ -17,13 +17,13 @@ const { user } = storeToRefs(useUserStore());
           text
           @click="showSidebar = true"
         />
-        <Logo class="logo" @click="router.push('/')" />
+        <Logo class="logo" @click="router.push('/home')" />
       </div>
 
       <nav class="desktop-nav">
         <RouterLink to="/journey/generate">Nouvelle sortie</RouterLink>
         <RouterLink to="/journey/generate">Résultat</RouterLink>
-        <Logo class="logo" @click="router.push('/')" />
+        <Logo class="logo" @click="router.push('/home')" />
         <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
         <RouterLink to="/profil">Profil</RouterLink>
       </nav>

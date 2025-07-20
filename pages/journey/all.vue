@@ -14,7 +14,6 @@ onMounted(async () => {
   try {
     journeys.value = await fetchJourneysByUser();
   } catch (e) {
-    console.error(e);
     error.value = "Erreur lors du chargement des journeys";
   } finally {
     loading.value = false;

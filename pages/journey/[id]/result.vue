@@ -2,10 +2,6 @@
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import {
-  completeJourney,
-  findActivityFromAnswers,
-} from "~/composables/service/journeyService";
 import type { JourneyData } from "~/types/activity";
 
 const route = useRoute();
@@ -20,8 +16,10 @@ const restaurantsList = ref<any[] | null>(null);
 const activity1 = ref(0);
 const activity2 = ref(29);
 const restaurant = ref(0);
-const { searchRestaurantsByTypes, fetchJourneyById, fetchAnswersByJourneyId } =
+const { searchRestaurantsByTypes, fetchJourneyById, completeJourney } =
   useJourney();
+const { fetchAnswersByJourneyId } = useAnswer();
+const { findActivityFromAnswers } = useActivity();
 onMounted(async () => {
   journey.value = await fetchJourneyById({ journeyId });
   baseJourney.value = journey;
@@ -40,7 +38,6 @@ onMounted(async () => {
       journey.value.type,
       minPrice
     );
-    console.log(restaurantsList.value[0]);
   }
 });
 
@@ -63,7 +60,7 @@ async function handleRegenerate() {
   shuffleRest();
 }
 
-async function handleSave() {
+const handleSave = async () => {
   const completeData = {
     isFullDay: baseJourney.value?.isFullDay,
     activity1Id: activityList.value?.[activity1.value].id,
@@ -76,7 +73,7 @@ async function handleSave() {
   } catch (e) {
     console.error("Erreur lors de la sauvegarde de la journée", e);
   }
-}
+};
 </script>
 
 <template>
@@ -89,7 +86,6 @@ async function handleSave() {
           background-color="#333"
           @click="handleRegenerate"
         />
-
         <Button label="Enregistrer la sortie" @click="handleSave" />
       </div>
     </section>
