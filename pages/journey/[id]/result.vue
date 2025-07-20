@@ -82,12 +82,12 @@ async function handleSave() {
 <template>
   <div v-if="restaurantsList">
     <section>
-      <CardJouney :journey="journey" v-if="journey" />
+      <CardJouney v-if="journey" :journey="journey" />
       <div class="btns">
         <Button
           label="Régénérer"
+          background-color="#333"
           @click="handleRegenerate"
-          backgroundColor="#333"
         />
 
         <Button label="Enregistrer la sortie" @click="handleSave" />
@@ -104,8 +104,8 @@ async function handleSave() {
       <div>
         <ActivityCard :activity="activityList[activity1]" />
         <ActivityCard
-          :activity="activityList[activity2]"
           v-if="journey?.isFullDay"
+          :activity="activityList[activity2]"
         />
       </div>
     </article>

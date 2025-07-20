@@ -1,10 +1,10 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "auth",
-});
 import { ref } from "vue";
 import { useAuth } from "@/composables/useAuth";
 import { InputText } from "primevue";
+definePageMeta({
+  layout: "auth",
+});
 
 const { registerUser } = useAuth();
 

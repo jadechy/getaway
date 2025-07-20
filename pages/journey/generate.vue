@@ -82,16 +82,16 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
         </StepList>
         <StepPanels>
           <StepPanel
-            class="journey-stepper"
             v-for="(step, i) in steps"
             :key="i"
-            :value="i"
             v-slot="{ activateCallback }"
+            class="journey-stepper"
+            :value="i"
           >
             <component
               :is="step.component"
               v-model="formAnswers"
-              :isActivity="step.label === 'Activité'"
+              :is-activity="step.label === 'Activité'"
             />
             <div class="btns">
               <Button
@@ -105,17 +105,17 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
                 v-if="i !== steps.length - 1"
                 label="Next"
                 icon="pi pi-arrow-right"
-                iconPos="right"
+                icon-pos="right"
                 @click="activateCallback(i + 1)"
               />
               <Button
                 v-if="i === steps.length - 1"
-                @click="handleSubmit(formAnswers)"
                 :label="
                   formAnswers.journeyIsFullDay
                     ? 'Génère ton incroyable journée !'
                     : 'Génère ton incroyable demi-journée !'
                 "
+                @click="handleSubmit(formAnswers)"
               />
             </div>
           </StepPanel>

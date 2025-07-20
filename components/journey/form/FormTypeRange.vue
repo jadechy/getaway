@@ -30,7 +30,7 @@ const typesList = Object.entries(
     <Listbox
       v-model="form.types"
       :options="typesList"
-      optionLabel="label"
+      option-label="label"
       class="type-form-listbox"
       multiple
       filter

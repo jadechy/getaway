@@ -9,13 +9,13 @@ const { user } = storeToRefs(useUserStore());
 
 <template>
   <ClientOnly>
-    <header class="site-header" v-if="user">
+    <header v-if="user" class="site-header">
       <div class="mobile-header">
         <Button
           icon="pi pi-bars"
           class="burger-btn"
-          @click="showSidebar = true"
           text
+          @click="showSidebar = true"
         />
         <Logo class="logo" @click="router.push('/')" />
       </div>

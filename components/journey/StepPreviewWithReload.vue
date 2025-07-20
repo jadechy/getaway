@@ -7,9 +7,9 @@
   <div class="flex items-center space-x-4 w-full">
     <slot />
     <button
-      @click="reload"
       class="p-2 transition-transform hover:rotate-180"
       aria-label="Recharger"
+      @click="reload"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

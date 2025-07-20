@@ -26,19 +26,19 @@ const activityCards = [
       <CategoryCard
         v-for="card in activityCards.slice(0, 2)"
         :key="card.type"
-        :activityType="card.type"
+        :activity-type="card.type"
         :label="card.label"
       />
     </div>
     <div class="cards-row">
       <CategoryCard
         class="flex-grow"
-        :activityType="activityCards[2].type"
+        :activity-type="activityCards[2].type"
         :label="activityCards[2].label"
       />
       <CategoryCard
         class="flex-shrink"
-        :activityType="activityCards[3].type"
+        :activity-type="activityCards[3].type"
         :label="activityCards[3].label"
       />
     </div>
