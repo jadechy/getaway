@@ -1,4 +1,4 @@
-import type { Typed } from "~/components/form/FormTypeRange.vue";
+import type { Typed } from "~/components/journey/form/FormTypeRange.vue";
 
 export const ACTIVITY_TYPES_LIST: Typed = {
   sport: "Sport",

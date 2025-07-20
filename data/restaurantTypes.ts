@@ -1,4 +1,4 @@
-import type { Typed } from "~/components/form/FormTypeRange.vue";
+import type { Typed } from "~/components/journey/form/FormTypeRange.vue";
 
 export const RESTAURANT_TYPES_LIST: Typed = {
   worldCuisine: "Cuisine Saveurs du monde",

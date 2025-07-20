@@ -66,6 +66,32 @@ const steps = computed(() => {
   }
 });
 
+const getStepModel = (label: string): WritableComputedRef<any> =>
+  computed({
+    get() {
+      if (label === "Info générale" || label === "Choisir type") {
+        return formAnswers.value;
+      } else if (label === "Activité") {
+        return formAnswers.value.activity;
+      } else if (label === "Restaurant") {
+        return formAnswers.value.restaurant;
+      }
+      // Ne jamais retourner {} si ce n’est pas typé correctement :
+      throw new Error(`Unknown step label: ${label}`);
+    },
+    set(newValue) {
+      if (label === "Info générale" || label === "Choisir type") {
+        formAnswers.value = newValue;
+      } else if (label === "Activité") {
+        formAnswers.value.activity = newValue;
+      } else if (label === "Restaurant") {
+        formAnswers.value.restaurant = newValue;
+      } else {
+        console.warn(`Unknown label in set(): ${label}`);
+      }
+    },
+});
+
 const handleSubmit = async (answers: CreateJourneyAnswers) => {
   if (!formAnswers.value) return;
   try {
@@ -98,9 +124,10 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
           >
             <component
               :is="step.component"
-              v-model="formAnswers"
+              v-model="getStepModel(step.label).value"
               :isActivity="step.label === 'Activité'"
             />
+
             <div class="btns">
               <Button
                 :disabled="i === 0"
