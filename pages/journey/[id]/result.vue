@@ -24,12 +24,11 @@ const { searchRestaurantsByTypes, fetchJourneyById, fetchAnswersByJourneyId } =
   useJourney();
 onMounted(async () => {
   journey.value = await fetchJourneyById({ journeyId });
-  baseJourney.value = journey;
+  baseJourney.value = journey.value;
   const answers = await fetchAnswersByJourneyId({ journeyId });
 
   if (answers && journey.value) {
     activityList.value = await findActivityFromAnswers(answers, journey.value);
-
     const allAnswersType = Array.from(
       new Set(answers.flatMap((a: any) => a.restaurant))
     );
@@ -40,7 +39,6 @@ onMounted(async () => {
       journey.value.type,
       minPrice
     );
-    console.log(restaurantsList.value[0]);
   }
 });
 
