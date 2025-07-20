@@ -1,7 +1,7 @@
 import type { BaseJourney } from "./journey";
 import type { Restaurant } from "./restaurant";
 export type ActivityApiType = {
-  id: number;
+  id: string;
   url: string;
   title: string;
   description: string;
@@ -22,7 +22,7 @@ export type ActivityApiType = {
   audience: string;
 };
 export type Journey = BaseJourney & {
-  activitiesId: number[];
+  activitiesId: string[];
   restaurantId: string;
 };
 

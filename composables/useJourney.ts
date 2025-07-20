@@ -18,6 +18,7 @@ import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
 import {
   ActivityType,
   type BaseJourney,
+  type CompleteData,
   type JourneyFromDB,
 } from "~/types/journey";
 import type { JourneyData } from "~/types/activity";
@@ -25,6 +26,7 @@ import {
   mapRawJourneyToJourney,
   mapRawRestaurantToRestaurant,
 } from "~/utils/formatJourney";
+import { useAnswer } from "./useAnswer";
 
 export const useJourney = () => {
   const db = getFirestore();
@@ -261,12 +263,6 @@ export const useJourney = () => {
     }
   };
 
-  type CompleteData = {
-    isFullDay: boolean;
-    activity1Id: string;
-    activity2Id: string | null;
-    restaurantId: string | null;
-  };
   type Props = {
     journeyId: string;
     completeData: CompleteData;

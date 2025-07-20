@@ -1,19 +1,9 @@
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
-import { DataBaseCollections } from "~/utils/const/databaseCollections";
 import type { Answer } from "~/types/answer";
 import type { ActivityApiType, JourneyData } from "~/types/activity";
 import { ActivityType } from "~/types/journey";
 import { ACTIVITY_TYPES_SELECT_STRING } from "~/utils/const/activityTypes";
 
 export const useActivity = () => {
-  const db = getFirestore();
   const journeyTypePublicFilterValues = (
     journeyType: ActivityType
   ): string[] => {

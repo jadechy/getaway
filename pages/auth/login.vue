@@ -27,10 +27,9 @@ const submitLogin = async (form: FormSubmitEvent) => {
     await userStore.login(email.value, password.value);
     router.push("/home");
   } catch (err) {
-    console.error("Login error:", userStore.error);
+    console.error("Login error:", err, userStore.error);
   }
 };
-
 </script>
 
 <template>

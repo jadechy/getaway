@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useActivity } from "~/composables/useActivity";
+import { useAnswer } from "~/composables/useAnswer";
 
-import type { JourneyData } from "~/types/activity";
+import type { ActivityApiType, JourneyData } from "~/types/activity";
+import type { CompleteData } from "~/types/journey";
+import type { Restaurant } from "~/types/restaurant";
 
 const route = useRoute();
 const router = useRouter();
@@ -10,9 +14,9 @@ const router = useRouter();
 const journeyId = route.params.id as string;
 
 const journey = ref<JourneyData | null>(null);
-const baseJourney = ref<any | null>(null);
-const activityList = ref<any[] | null>(null);
-const restaurantsList = ref<any[] | null>(null);
+const baseJourney = ref<JourneyData | null>(null);
+const activityList = ref<ActivityApiType[] | null>(null);
+const restaurantsList = ref<Restaurant[] | null>(null);
 const activity1 = ref(0);
 const activity2 = ref(29);
 const restaurant = ref(0);
@@ -22,16 +26,16 @@ const { fetchAnswersByJourneyId } = useAnswer();
 const { findActivityFromAnswers } = useActivity();
 onMounted(async () => {
   journey.value = await fetchJourneyById({ journeyId });
-  baseJourney.value = journey;
+  baseJourney.value = journey.value;
   const answers = await fetchAnswersByJourneyId({ journeyId });
 
   if (answers && journey.value) {
     activityList.value = await findActivityFromAnswers(answers, journey.value);
 
     const allAnswersType = Array.from(
-      new Set(answers.flatMap((a: any) => a.restaurant))
+      new Set(answers.flatMap((a) => a.restaurant))
     );
-    const priceList = answers.map((a: any) => a.restoPriceRange[1]);
+    const priceList = answers.map((a) => a.restoPriceRange[1]);
     const minPrice = Math.min(...priceList);
     restaurantsList.value = await searchRestaurantsByTypes(
       allAnswersType,
@@ -61,11 +65,26 @@ async function handleRegenerate() {
 }
 
 const handleSave = async () => {
-  const completeData = {
+  const activity1Id = activityList.value?.[activity1.value]?.id;
+  const activity2Id = activityList.value?.[activity2.value]?.id;
+  const restaurantId = restaurantsList.value?.[restaurant.value]?.id;
+
+  if (
+    baseJourney.value?.isFullDay === undefined ||
+    !activity1Id ||
+    !activity2Id ||
+    !restaurantId
+  ) {
+    // TODO: Afficher un message d’erreur utilisateur
+    console.warn("Certaines données sont manquantes :");
+    console.warn({ activity1Id, activity2Id, restaurantId });
+    return;
+  }
+  const completeData: CompleteData = {
     isFullDay: baseJourney.value?.isFullDay,
-    activity1Id: activityList.value?.[activity1.value].id,
-    activity2Id: activityList.value?.[activity2.value].id,
-    restaurantId: restaurantsList.value?.[restaurant.value].id,
+    activity1Id: activity1Id,
+    activity2Id: activity2Id,
+    restaurantId: restaurantId,
   };
   try {
     await completeJourney({ journeyId, completeData });

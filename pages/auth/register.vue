@@ -12,11 +12,9 @@ const firstName = ref("");
 const lastName = ref("");
 const email = ref("");
 const password = ref("");
-const error = ref("");
 
 const handleRegister = async () => {
   try {
-    error.value = "";
     await registerUser({
       email: email.value,
       password: password.value,
@@ -25,8 +23,8 @@ const handleRegister = async () => {
     });
 
     navigateTo("/");
-  } catch (err: any) {
-    error.value = err.message;
+  } catch (err) {
+    console.error(err);
   }
 };
 </script>

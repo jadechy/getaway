@@ -110,12 +110,12 @@ const handleSubmit = async () => {
               />
               <Button
                 v-if="i === steps.length - 1"
-                @click="handleSubmit()"
                 :label="
                   formAnswers.journeyIsFullDay
                     ? 'Génère ton incroyable journée !'
                     : 'Génère ton incroyable demi-journée !'
                 "
+                @click="handleSubmit()"
               />
             </div>
           </StepPanel>
