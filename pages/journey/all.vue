@@ -23,8 +23,8 @@ onMounted(async () => {
 
 <template>
   <div v-if="loading">Chargement...</div>
-  <div v-if="error">{{ error }}</div>
-  <ul v-if="!loading && !error">
+  <div v-else-if="error">{{ error }}</div>
+  <ul v-else-if="journeys.length > 0">
     <li
       v-for="journey in journeys"
       :key="journey.id"
@@ -33,6 +33,7 @@ onMounted(async () => {
       <CardJouney :journey="journey" />
     </li>
   </ul>
+  <p v-else>Pas encore de sortie enregistées</p>
 </template>
 
 <style scoped>
