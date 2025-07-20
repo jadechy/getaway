@@ -12,7 +12,7 @@ export interface CreateJourneyAnswers {
   journeyEndingTime: Date;
   journeyMemberNumber: number;
   journeyNeedPMR: boolean;
-  journeyActivityType: ActivityType;
+  journeyActivityType?: ActivityType;
 
   journeyIsFullDay: boolean;
 

@@ -5,6 +5,7 @@ import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
 import FormTypeRange from "~/components/journey/form/FormTypeRange.vue";
 import FormIntro from "~/components/journey/form/FormIntro.vue";
+import FormChooseType from "~/components/journey/form/FormChooseType.vue";
 
 const { createJourney } = useJourney();
 
@@ -16,9 +17,6 @@ const rawType = route.query.formType as string;
 const isValidActivityType = Object.values(ActivityType).includes(
   rawType as ActivityType
 );
-const journeyActivityType = isValidActivityType
-  ? (rawType as ActivityType)
-  : ActivityType.random;
 
 const formAnswers = ref<CreateJourneyAnswers>({
   userId: "",
@@ -29,7 +27,9 @@ const formAnswers = ref<CreateJourneyAnswers>({
   journeyMemberNumber: 1,
   journeyNeedPMR: false,
   journeyIsFullDay: false,
-  journeyActivityType: journeyActivityType,
+  journeyActivityType: isValidActivityType
+    ? (rawType as ActivityType)
+    : undefined,
   activity: {
     types: [],
     priceRange: [0, 100],
@@ -40,6 +40,8 @@ const formAnswers = ref<CreateJourneyAnswers>({
   },
 });
 
+const showChooseTypeStep = computed(() => route.query.fromNav === "true");
+
 onMounted(async () => {
   if (!user.value) return;
   formAnswers.value.userId = user.value.uid;
@@ -49,14 +51,22 @@ type Step = {
   label: string;
   component: Component;
 };
-const steps: Step[] = [
-  { label: "Info générale", component: FormIntro },
-  { label: "Activité", component: FormTypeRange },
-  {
-    label: "Restaurant",
-    component: FormTypeRange,
-  },
-];
+const steps = computed(() => {
+  let baseSteps: Step[] = [
+    { label: "Info générale", component: FormIntro },
+    { label: "Activité", component: FormTypeRange },
+    { label: "Restaurant", component: FormTypeRange },
+  ];
+
+  if (showChooseTypeStep.value) {
+    baseSteps = [
+      { label: "Type de sortie", component: FormChooseType },
+      ...baseSteps,
+    ];
+  }
+
+  return baseSteps;
+});
 
 const handleSubmit = async () => {
   if (!formAnswers.value) return;
@@ -93,6 +103,7 @@ const handleSubmit = async () => {
               v-model="formAnswers"
               :is-activity="step.label === 'Activité'"
             />
+
             <div class="btns">
               <Button
                 :disabled="i === 0"

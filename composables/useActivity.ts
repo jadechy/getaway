@@ -38,7 +38,6 @@ export const useActivity = () => {
     const isFree = isSomeoneCheap ? "price_type='gratuit'" : "";
 
     const allTags = answers.flatMap((answer) => answer.activities);
-    console.log(allTags);
     const tagFilter = allTags
       ? Array.from(allTags)
           .map((tag) => `qfap_tags LIKE '%${tag}%'`)
@@ -53,6 +52,24 @@ export const useActivity = () => {
       .join(" and ");
     const encodedWhereQuery = encodeURIComponent(whereQuery);
     return `limit=${limit}&start=${start}&where=${encodedWhereQuery}&select=${ACTIVITY_TYPES_SELECT_STRING}`;
+  };
+  const fetchActivityFromId = async (
+    activityId: number
+  ): Promise<ActivityApiType | null> => {
+    const where = encodeURIComponent(`id='${activityId}'`);
+    const queryParams = `limit=1&start=0&where=${where}&select=${ACTIVITY_TYPES_SELECT_STRING}`;
+    const url = `https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records?${queryParams}`;
+
+    try {
+      const response = await $fetch<{ results: ActivityApiType[] }>(url);
+      if (!response.results || response.results.length === 0) {
+        return null;
+      }
+      return response.results[0];
+    } catch (error) {
+      console.error(`Erreur lors du fetch de l'activité ${activityId}`, error);
+      return null;
+    }
   };
   const findActivityFromAnswers = async (
     answers: Answer[],
@@ -75,5 +92,6 @@ export const useActivity = () => {
 
   return {
     findActivityFromAnswers,
+    fetchActivityFromId,
   };
 };

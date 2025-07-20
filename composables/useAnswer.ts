@@ -22,7 +22,6 @@ export const useAnswer = () => {
       isowner: answer.isowner,
     });
   };
-
   const fetchAnswersByJourneyId = async ({
     journeyId,
   }: {
@@ -36,8 +35,6 @@ export const useAnswer = () => {
       const answers: Answer[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data() as Answer;
-        console.log("--------fetch");
-        console.log(doc.data());
         answers.push(data);
       });
 

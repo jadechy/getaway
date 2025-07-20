@@ -21,7 +21,7 @@ import {
   type CompleteData,
   type JourneyFromDB,
 } from "~/types/journey";
-import type { JourneyData } from "~/types/activity";
+import type { ActivityApiType, JourneyData } from "~/types/activity";
 import {
   mapRawJourneyToJourney,
   mapRawRestaurantToRestaurant,
@@ -34,6 +34,8 @@ export const useJourney = () => {
   const { user } = useUserStore();
   const router = useRouter();
   const { createAnswer } = useAnswer();
+  const { fetchActivityFromId } = useActivity();
+
   const createJourney = async (
     form: CreateJourneyAnswers
   ): Promise<BaseJourney> => {
@@ -78,7 +80,7 @@ export const useJourney = () => {
     return {
       id: sortieId,
       title: form.journeyName,
-      type: form.journeyActivityType,
+      type: form.journeyActivityType ?? ActivityType.random,
       date: form.journeyDate,
       timeStart: form.journeyStartingTime,
       timeFinish: form.journeyEndingTime,
@@ -208,9 +210,14 @@ export const useJourney = () => {
     if (!snapshot.exists()) return null;
     const data = snapshot.data();
     const activitiesId = [];
-    if (data.ACT_FINAL1) activitiesId.push(Number(data.ACT_FINAL1));
-    if (data.ACT_FINAL2) activitiesId.push(Number(data.ACT_FINAL2));
-    const rawData = data as JourneyFromDB;
+    if (data.ACT_ID1) activitiesId.push(Number(data.ACT_ID1));
+    if (data.ACT_ID2) activitiesId.push(Number(data.ACT_ID2));
+    const rawData = {
+      ...data,
+      id: snapshot.id,
+      ACT_ID1: data.ACT_ID1 ? Number(data.ACT_ID1) : undefined,
+      ACT_ID2: data.ACT_ID2 ? Number(data.ACT_ID2) : undefined,
+    } as JourneyFromDB;
     rawData.id = snapshot.id;
     const journey = mapRawJourneyToJourney(rawData);
     let restaurant: Restaurant | undefined;
@@ -227,9 +234,19 @@ export const useJourney = () => {
         restaurant = mapRawRestaurantToRestaurant(rawRestaunt);
       }
     }
+    let activities: ActivityApiType[] | undefined;
+    if (activitiesId.length > 0) {
+      const activitiesResults = await Promise.all(
+        activitiesId.map((id) => fetchActivityFromId(id))
+      );
+      activities = activitiesResults.filter(
+        (activity): activity is ActivityApiType => activity !== null
+      );
+    }
     return {
       ...journey,
       restaurant: restaurant,
+      activities: activities,
     };
   };
 

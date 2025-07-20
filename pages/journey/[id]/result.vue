@@ -14,7 +14,6 @@ const router = useRouter();
 const journeyId = route.params.id as string;
 
 const journey = ref<JourneyData | null>(null);
-const baseJourney = ref<JourneyData | null>(null);
 const activityList = ref<ActivityApiType[] | null>(null);
 const restaurantsList = ref<Restaurant[] | null>(null);
 const activity1 = ref(0);
@@ -25,16 +24,16 @@ const { searchRestaurantsByTypes, fetchJourneyById, completeJourney } =
 const { fetchAnswersByJourneyId } = useAnswer();
 const { findActivityFromAnswers } = useActivity();
 onMounted(async () => {
-  journey.value = await fetchJourneyById({ journeyId });
-  baseJourney.value = journey.value;
-  const answers = await fetchAnswersByJourneyId({ journeyId });
+  try {
+    journey.value = await fetchJourneyById({ journeyId });
+    const answers = await fetchAnswersByJourneyId({ journeyId });
+    if (!answers || !journey.value) return;
 
-  if (answers && journey.value) {
     activityList.value = await findActivityFromAnswers(answers, journey.value);
-
     const allAnswersType = Array.from(
       new Set(answers.flatMap((a) => a.restaurant))
     );
+
     const priceList = answers.map((a) => a.restoPriceRange[1]);
     const minPrice = Math.min(...priceList);
     restaurantsList.value = await searchRestaurantsByTypes(
@@ -42,6 +41,8 @@ onMounted(async () => {
       journey.value.type,
       minPrice
     );
+  } catch (e) {
+    console.error(e);
   }
 });
 
@@ -70,7 +71,7 @@ const handleSave = async () => {
   const restaurantId = restaurantsList.value?.[restaurant.value]?.id;
 
   if (
-    baseJourney.value?.isFullDay === undefined ||
+    journey.value?.isFullDay === undefined ||
     !activity1Id ||
     !activity2Id ||
     !restaurantId
@@ -81,7 +82,7 @@ const handleSave = async () => {
     return;
   }
   const completeData: CompleteData = {
-    isFullDay: baseJourney.value?.isFullDay,
+    isFullDay: journey.value?.isFullDay,
     activity1Id: activity1Id,
     activity2Id: activity2Id,
     restaurantId: restaurantId,
