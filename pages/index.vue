@@ -13,11 +13,11 @@ const router = useRouter();
         humeur. Getaway te propose des idées de sorties, rien que pour toi.
       </h2>
       <div class="group-btn">
-        <Button @click="router.push('/auth/register')" label="Démarrer" />
+        <Button label="Démarrer" @click="router.push('/auth/register')" />
         <Button
-          @click="router.push('/auth/login')"
           label="Se connecter"
           variant="outlined"
+          @click="router.push('/auth/login')"
         />
       </div>
     </section>

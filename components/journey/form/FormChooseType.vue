@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import type { CreateJourneyAnswers } from "~/types/answer";
+import { ActivityType } from "~/types/journey";
+const activityTypes = Object.values(ActivityType);
+const renderLabel = (type: ActivityType) => {
+  switch (type) {
+    case ActivityType.friends:
+      return "Entre potes";
+    case ActivityType.family:
+      return "En famille";
+    case ActivityType.romantic:
+      return "En couple";
+    case ActivityType.random:
+      return "Aléatoire";
+  }
+};
 
-const activityCards = [
-  { type: 'friends', label: "Entre potes" },
-  { type: 'family', label: "En famille" },
-  { type: 'romantic', label: "En couple" },
-  { type: 'random', label: "Aléatoire" },
-];
-
-const emits = defineEmits<{
-  (e: 'update:type', type: string): void;
-}>();
-
-const selectedType = ref<string | null>(null);
-
-function selectType(type: string) {
-  selectedType.value = type;
-  emits('update:type', type);
-}
+const form = defineModel<CreateJourneyAnswers>({ required: true });
+const selectType = ({ type }: { type: ActivityType }) => {
+  form.value.journeyActivityType = type;
+};
 </script>
 
 <template>
@@ -27,22 +28,28 @@ function selectType(type: string) {
     <section class="cards-container">
       <div class="cards-row">
         <div
-          v-for="card in activityCards.slice(0, 2)"
-          :key="card.type"
-          :class="['category-card', { selected: selectedType === card.type }]"
-          @click="selectType(card.type)"
+          v-for="(activity, i) in activityTypes.slice(0, 2)"
+          :key="i"
+          :class="[
+            'category-card',
+            { selected: form.journeyActivityType === activity },
+          ]"
+          @click="selectType({ type: activity })"
         >
-          <h3>{{ card.label }}</h3>
+          <h3>{{ renderLabel(activity) }}</h3>
         </div>
       </div>
       <div class="cards-row">
         <div
-          v-for="card in activityCards.slice(2)"
-          :key="card.type"
-          :class="['category-card', { selected: selectedType === card.type }]"
-          @click="selectType(card.type)"
+          v-for="(activity, i) in activityTypes.slice(2)"
+          :key="i"
+          :class="[
+            'category-card',
+            { selected: form.journeyActivityType === activity },
+          ]"
+          @click="selectType({ type: activity })"
         >
-          <h3>{{ card.label }}</h3>
+          <h3>{{ renderLabel(activity) }}</h3>
         </div>
       </div>
     </section>
@@ -82,13 +89,14 @@ function selectType(type: string) {
 }
 
 .category-card:hover {
-  border-color: #007bff;
-  background-color: #e7f1ff;
+  border-color: var(--p-primary-color);
+  color: var(--p-primary-color);
 }
 
 .category-card.selected {
-  border-color: #0056b3;
-  background-color: #cce4ff;
+  border-color: var(--p-primary-color);
+  color: white;
+  background-color: var(--p-primary-color);
   font-weight: bold;
 }
 </style>

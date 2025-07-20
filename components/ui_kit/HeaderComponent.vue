@@ -9,23 +9,29 @@ const { user } = storeToRefs(useUserStore());
 
 <template>
   <ClientOnly>
-    <header class="site-header" v-if="user">
+    <header v-if="user" class="site-header">
       <div class="mobile-header">
         <Button
           icon="pi pi-bars"
           class="burger-btn"
-          @click="showSidebar = true"
           text
+          @click="showSidebar = true"
         />
-        <Logo class="logo" @click="router.push('/')" />
+        <Logo class="logo" @click="router.push('/home')" />
       </div>
 
       <nav class="desktop-nav">
-        <RouterLink :to="{ path: '/journey/generate', query: { fromNav: 'true' } }">Nouvelle sortie</RouterLink>
-        <RouterLink :to="{ path: '/journey/generate', query: { fromNav: 'true' } }">Résultat</RouterLink>
+        <RouterLink
+          :to="{ path: '/journey/generate', query: { fromNav: 'true' } }"
+          >Nouvelle sortie</RouterLink
+        >
+        <RouterLink
+          :to="{ path: '/journey/generate', query: { fromNav: 'true' } }"
+          >Résultat</RouterLink
+        >
         <Logo class="logo" @click="router.push('/')" />
         <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
-        <RouterLink to="/profil">Profil</RouterLink>
+        <RouterLink to="/profile">Profil</RouterLink>
       </nav>
 
       <Sidebar
@@ -43,7 +49,7 @@ const { user } = storeToRefs(useUserStore());
           <RouterLink to="/journey/all" @click="showSidebar = false"
             >Sorties enregistrées</RouterLink
           >
-          <RouterLink to="/profil" @click="showSidebar = false"
+          <RouterLink to="/profile" @click="showSidebar = false"
             >Profil</RouterLink
           >
         </div>

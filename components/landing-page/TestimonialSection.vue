@@ -30,13 +30,13 @@ const responsiveOptions = ref([
     <h3>Ils ont testé Getaway</h3>
     <Carousel
       :value="testimonials"
-      :numVisible="1"
-      :numScroll="1"
-      :autoplayInterval="4000"
+      :num-visible="1"
+      :num-scroll="1"
+      :autoplay-interval="4000"
       :circular="true"
-      :showIndicators="false"
-      :showNavigators="false"
-      :responsiveOptions="responsiveOptions"
+      :show-indicators="false"
+      :show-navigators="false"
+      :responsive-options="responsiveOptions"
     >
       <template #item="slotProps">
         <div class="testimonial-card">

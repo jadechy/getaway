@@ -5,7 +5,7 @@ import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
 import FormTypeRange from "~/components/journey/form/FormTypeRange.vue";
 import FormIntro from "~/components/journey/form/FormIntro.vue";
-import { FormChooseType } from "#components";
+import FormChooseType from "~/components/journey/form/FormChooseType.vue";
 
 const { createJourney } = useJourney();
 
@@ -17,9 +17,6 @@ const rawType = route.query.formType as string;
 const isValidActivityType = Object.values(ActivityType).includes(
   rawType as ActivityType
 );
-const journeyActivityType = isValidActivityType
-  ? (rawType as ActivityType)
-  : ActivityType.random;
 
 const formAnswers = ref<CreateJourneyAnswers>({
   userId: "",
@@ -30,7 +27,9 @@ const formAnswers = ref<CreateJourneyAnswers>({
   journeyMemberNumber: 1,
   journeyNeedPMR: false,
   journeyIsFullDay: false,
-  journeyActivityType: journeyActivityType,
+  journeyActivityType: isValidActivityType
+    ? (rawType as ActivityType)
+    : undefined,
   activity: {
     types: [],
     priceRange: [0, 100],
@@ -41,7 +40,7 @@ const formAnswers = ref<CreateJourneyAnswers>({
   },
 });
 
-const showChooseTypeStep = computed(() => route.query.fromNav === 'true');
+const showChooseTypeStep = computed(() => route.query.fromNav === "true");
 
 onMounted(async () => {
   if (!user.value) return;
@@ -53,46 +52,23 @@ type Step = {
   component: Component;
 };
 const steps = computed(() => {
-  const baseSteps = [
+  let baseSteps: Step[] = [
     { label: "Info générale", component: FormIntro },
     { label: "Activité", component: FormTypeRange },
     { label: "Restaurant", component: FormTypeRange },
   ];
 
   if (showChooseTypeStep.value) {
-    return [{ label: "Choisir type", component: FormChooseType }, ...baseSteps];
-  } else {
-    return baseSteps;
+    baseSteps = [
+      { label: "Type de sortie", component: FormChooseType },
+      ...baseSteps,
+    ];
   }
+
+  return baseSteps;
 });
 
-const getStepModel = (label: string): WritableComputedRef<any> =>
-  computed({
-    get() {
-      if (label === "Info générale" || label === "Choisir type") {
-        return formAnswers.value;
-      } else if (label === "Activité") {
-        return formAnswers.value.activity;
-      } else if (label === "Restaurant") {
-        return formAnswers.value.restaurant;
-      }
-      // Ne jamais retourner {} si ce n’est pas typé correctement :
-      throw new Error(`Unknown step label: ${label}`);
-    },
-    set(newValue) {
-      if (label === "Info générale" || label === "Choisir type") {
-        formAnswers.value = newValue;
-      } else if (label === "Activité") {
-        formAnswers.value.activity = newValue;
-      } else if (label === "Restaurant") {
-        formAnswers.value.restaurant = newValue;
-      } else {
-        console.warn(`Unknown label in set(): ${label}`);
-      }
-    },
-});
-
-const handleSubmit = async (answers: CreateJourneyAnswers) => {
+const handleSubmit = async () => {
   if (!formAnswers.value) return;
   try {
     const journey = await createJourney(formAnswers.value);
@@ -116,16 +92,16 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
         </StepList>
         <StepPanels>
           <StepPanel
-            class="journey-stepper"
             v-for="(step, i) in steps"
             :key="i"
-            :value="i"
             v-slot="{ activateCallback }"
+            class="journey-stepper"
+            :value="i"
           >
             <component
               :is="step.component"
-              v-model="getStepModel(step.label).value"
-              :isActivity="step.label === 'Activité'"
+              v-model="formAnswers"
+              :is-activity="step.label === 'Activité'"
             />
 
             <div class="btns">
@@ -140,17 +116,17 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
                 v-if="i !== steps.length - 1"
                 label="Next"
                 icon="pi pi-arrow-right"
-                iconPos="right"
+                icon-pos="right"
                 @click="activateCallback(i + 1)"
               />
               <Button
                 v-if="i === steps.length - 1"
-                @click="handleSubmit(formAnswers)"
                 :label="
                   formAnswers.journeyIsFullDay
                     ? 'Génère ton incroyable journée !'
                     : 'Génère ton incroyable demi-journée !'
                 "
+                @click="handleSubmit()"
               />
             </div>
           </StepPanel>

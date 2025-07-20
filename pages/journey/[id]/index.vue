@@ -19,8 +19,7 @@ onMounted(async () => {
     journeyData.value = await fetchJourneyById({ journeyId: id });
     if (!journeyData.value) error.value = "Aucune sortie trouvée.";
   } catch (e) {
-    error.value = "Erreur lors du chargement.";
-    console.error(e);
+    error.value = `Erreur lors du chargement. ${e}`;
   } finally {
     loading.value = false;
   }
