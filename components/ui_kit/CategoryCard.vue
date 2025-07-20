@@ -27,11 +27,11 @@ const onClick = () => {
 <template>
   <div
     class="category-card"
-    @click="onClick"
     :style="{
       backgroundColor: `var(--p-${color.color}-300)`,
       color: `var(--p-${color.color}-700)`,
     }"
+    @click="onClick"
   >
     <p class="label">
       <i class="pi icon" :class="`${color.icon}`"></i> {{ label }}

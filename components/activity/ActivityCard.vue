@@ -26,7 +26,9 @@ defineProps<{
     <template #title>{{ activity.title }}</template>
 
     <template #content>
-      <div class="activity-desc" v-html="activity.description"></div>
+      <div class="activity-desc">
+        <p>{{ activity.description }}</p>
+      </div>
     </template>
     <template #footer>
       <p class="activity-address">

@@ -30,22 +30,10 @@ export type JourneyFromDB = {
   ACT_ID2?: number;
   RES_ID: string;
 };
-export type Step = {
-  isRestaurant: boolean;
-  types: string[];
-  name: string;
-  price: number | string;
-  adress: string;
-  startingHour: any;
-  endingHour: any;
-  description?: string;
-  img?: {
-    url: string;
-    alt: string;
-  };
+
+export type CompleteData = {
+  isFullDay: boolean;
+  activity1Id: string;
+  activity2Id: string | null;
+  restaurantId: string | null;
 };
-export enum JourneyStatus {
-  waitingForAnswer = "waitingForAnswers",
-  readyForGeneration = "readyForGeneration",
-  generated = "generated",
-}

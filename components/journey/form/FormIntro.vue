@@ -21,9 +21,9 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       <DatePicker
         id="journeyDate"
         v-model="form.journeyDate"
-        showIcon
+        show-icon
         fluid
-        iconDisplay="input"
+        icon-display="input"
         placeholder="jj/mm/aaaa"
       />
     </div>
@@ -33,10 +33,10 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       <DatePicker
         id="startTime"
         v-model="form.journeyStartingTime"
-        showIcon
+        show-icon
         fluid
-        iconDisplay="input"
-        timeOnly
+        icon-display="input"
+        time-only
         placeholder="--:--"
       >
         <template #inputicon="slotProps">
@@ -50,10 +50,10 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       <DatePicker
         id="endTime"
         v-model="form.journeyEndingTime"
-        showIcon
+        show-icon
         fluid
-        iconDisplay="input"
-        timeOnly
+        icon-display="input"
+        time-only
         placeholder="--:--"
       >
         <template #inputicon="slotProps">
@@ -70,8 +70,8 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
           { label: 'Journée complète', value: true },
           { label: 'Demi-journée', value: false },
         ]"
-        optionLabel="label"
-        optionValue="value"
+        option-label="label"
+        option-value="value"
         class="form-select"
       />
     </div>
@@ -84,11 +84,11 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       </div>
       <Slider
         id="memberSlider"
+        v-model="form.journeyMemberNumber"
         type="range"
         :min="1"
         :max="15"
         class="form-slider"
-        v-model="form.journeyMemberNumber"
       />
     </div>
 
@@ -96,8 +96,8 @@ const form = defineModel<CreateJourneyAnswers>({ required: true });
       <label>Besoin PMR</label>
       <ToggleButton
         v-model="form.journeyNeedPMR"
-        onLabel="PMR"
-        offLabel="Non PMR"
+        on-label="PMR"
+        off-label="Non PMR"
       />
     </div>
   </div>

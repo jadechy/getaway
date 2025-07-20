@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
+import type { FirebaseError } from "firebase-admin";
 
 export const useUserStore = defineStore("user", () => {
   const auth = useFirebaseAuth();
@@ -33,9 +34,10 @@ export const useUserStore = defineStore("user", () => {
         password
       );
       user.value = userCredential.user;
-    } catch (err: any) {
-      error.value = err.message;
-      throw err;
+    } catch (err: unknown) {
+      const firebaseErro = err as FirebaseError;
+      error.value = firebaseErro.message;
+      throw firebaseErro;
     }
   };
 

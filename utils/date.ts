@@ -1,12 +1,12 @@
+import { format } from "date-fns";
+import type { BaseJourney } from "~/types/journey";
+
 export const getDurationHours = ({ journey }: { journey: BaseJourney }) => {
   if (journey.isFullDay) return "Toute la journée";
   const diffMs = journey.timeFinish.getTime() - journey.timeStart.getTime();
   const diffH = diffMs / (1000 * 60 * 60);
   return `${diffH.toFixed(1)}h`;
 };
-
-import { format } from "date-fns";
-import type { BaseJourney } from "~/types/journey";
 
 export const getFormattedDate = ({ date }: { date: Date }) => {
   return format(date, "dd MMMM yyyy");

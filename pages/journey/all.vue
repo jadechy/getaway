@@ -14,8 +14,7 @@ onMounted(async () => {
   try {
     journeys.value = await fetchJourneysByUser();
   } catch (e) {
-    console.error(e);
-    error.value = "Erreur lors du chargement des journeys";
+    error.value = `Erreur lors du chargement des journeys, ${e}`;
   } finally {
     loading.value = false;
   }
@@ -27,7 +26,7 @@ onMounted(async () => {
   <div v-if="error">{{ error }}</div>
   <ul v-if="!loading && !error">
     <li
-      v-for="(journey, i) in journeys"
+      v-for="journey in journeys"
       :key="journey.id"
       @click="router.push(`/journey/${journey.id}`)"
     >
