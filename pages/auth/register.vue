@@ -12,20 +12,22 @@ const firstName = ref("");
 const lastName = ref("");
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 
 const handleRegister = async () => {
-  try {
-    await registerUser({
-      email: email.value,
-      password: password.value,
-      firstName: firstName.value,
-      lastName: lastName.value,
-    });
+  if (password.value === confirmPassword.value)
+    try {
+      await registerUser({
+        email: email.value,
+        password: password.value,
+        firstName: firstName.value,
+        lastName: lastName.value,
+      });
 
-    navigateTo("/");
-  } catch (err) {
-    console.error(err);
-  }
+      navigateTo("/home");
+    } catch (err) {
+      console.error(err);
+    }
 };
 </script>
 
@@ -36,14 +38,13 @@ const handleRegister = async () => {
       <InputText v-model="firstName" placeholder="Prénom" />
       <InputText v-model="lastName" placeholder="Nom" />
       <InputText v-model="email" placeholder="Email" />
-      <InputText v-model="email" placeholder="Age" />
       <InputText
         v-model="password"
         type="password"
         placeholder="Mot de passe"
       />
       <InputText
-        v-model="password"
+        v-model="confirmPassword"
         type="password"
         placeholder="Confirmation de mot de passe"
       />

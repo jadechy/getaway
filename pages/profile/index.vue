@@ -2,11 +2,10 @@
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
+
 const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
-
+const { user, userData } = storeToRefs(userStore);
 const router = useRouter();
-
 const handleLogout = async () => {
   await userStore.logout();
   router.push("/");
@@ -25,7 +24,12 @@ const handleLogout = async () => {
             size="xlarge"
           />
           <div>
-            <h2>{{ user.email || "Utilisateur" }}</h2>
+            <h2>
+              {{ userData?.util_prenom }}
+              {{ userData?.util_nom }}
+              <br />
+              <small>{{ user.email }}</small>
+            </h2>
             <p class="uid">ID : {{ user.uid }}</p>
           </div>
         </div>
@@ -43,11 +47,21 @@ const handleLogout = async () => {
             {{ user.metadata?.lastSignInTime }}
           </p>
         </div>
-        <Button
-          label="Se déconnecter"
-          icon="pi pi-sign-out"
-          @click="handleLogout"
-        />
+
+        <div class="action-buttons">
+          <Button
+            label="Éditer le profil"
+            icon="pi pi-pencil"
+            class="p-button-secondary"
+            @click="() => router.push('/profile/edit')"
+          />
+          <Button
+            label="Se déconnecter"
+            icon="pi pi-sign-out"
+            severity="danger"
+            @click="handleLogout"
+          />
+        </div>
       </template>
     </Card>
   </div>
@@ -84,5 +98,12 @@ const handleLogout = async () => {
 .info {
   margin-top: 1rem;
   line-height: 1.6;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }
 </style>

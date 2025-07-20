@@ -25,7 +25,7 @@ const { user } = storeToRefs(useUserStore());
         <RouterLink to="/journey/generate">Résultat</RouterLink>
         <Logo class="logo" @click="router.push('/home')" />
         <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
-        <RouterLink to="/profil">Profil</RouterLink>
+        <RouterLink to="/profile">Profil</RouterLink>
       </nav>
 
       <Sidebar
@@ -43,7 +43,7 @@ const { user } = storeToRefs(useUserStore());
           <RouterLink to="/journey/all" @click="showSidebar = false"
             >Sorties enregistrées</RouterLink
           >
-          <RouterLink to="/profil" @click="showSidebar = false"
+          <RouterLink to="/profile" @click="showSidebar = false"
             >Profil</RouterLink
           >
         </div>
