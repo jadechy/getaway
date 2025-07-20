@@ -60,6 +60,27 @@ const buildActivityQueryParams = (
   return `limit=${limit}&start=${start}&where=${encodedWhereQuery}&select=${ACTIVITY_TYPES_SELECT_STRING}`;
 };
 
+const buildActivityQueryParamsFromId = (activityId: number): string => {
+  const where = encodeURIComponent(`id='${activityId}'`);
+  return `limit=1&start=0&where=${where}&select=${ACTIVITY_TYPES_SELECT_STRING}`;
+};
+
+export const fetchActivityFromId = async (activityId: number): Promise<ActivityApiType | null> => {
+  const queryParams = buildActivityQueryParamsFromId(activityId);
+  const url = `https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records?${queryParams}`;
+
+  try {
+    const response = await $fetch<{ results: ActivityApiType[] }>(url);
+    if (!response.results || response.results.length === 0) {
+      return null;
+    }
+    return response.results[0];
+  } catch (error) {
+    console.error(`Erreur lors du fetch de l'activité ${activityId}`, error);
+    return null;
+  }
+};
+
 const journeyTypePublicFilterValues = (journeyType: ActivityType): string[] => {
   switch (journeyType) {
     case ActivityType.family:

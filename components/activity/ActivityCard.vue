@@ -1,16 +1,16 @@
 <script setup lang="ts">
-defineProps<{
-  activity: {
-    title: string;
-    description: string;
-    cover_url: string;
-    cover_alt: string;
-    address_street: string;
-    address_zipcode: string;
-    address_city: string;
-    url: string;
-  };
-}>();
+  defineProps<{
+    activity: {
+      title: string;
+      description: string;
+      cover_url: string;
+      cover_alt: string;
+      address_street: string;
+      address_zipcode: string;
+      address_city: string;
+      url: string;
+    };
+  }>();
 </script>
 
 <template>
