@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { DataBaseCollections } from "~/utils/const/databaseCollections";
-import type { CreateJourneyAnswers, Answer } from "~/types/answer";
+import type { CreateJourneyAnswers } from "~/types/answer";
 import type { FirestoreUser } from "~/types/user";
 import type { Restaurant, RestaurantFromDB } from "~/types/restaurant";
 import {
@@ -31,6 +31,7 @@ export const useJourney = () => {
   const auth = getAuth();
   const { user } = useUserStore();
   const router = useRouter();
+  const { createAnswer } = useAnswer();
   const createJourney = async (
     form: CreateJourneyAnswers
   ): Promise<BaseJourney> => {
@@ -62,7 +63,6 @@ export const useJourney = () => {
     const sortieId = docRef.id;
 
     await modifyUser(form.userId, sortieId, form.journeyIsFullDay);
-
     await createAnswer({
       id: null,
       sortieId,
@@ -84,17 +84,6 @@ export const useJourney = () => {
       ownerId: form.userId,
       needPMR: form.journeyNeedPMR,
     };
-  };
-
-  const createAnswer = async (answer: Answer): Promise<void> => {
-    await addDoc(collection(db, DataBaseCollections.reponses), {
-      sortieId: answer.sortieId,
-      activities: answer.activities,
-      activityPriceRange: answer.activityPriceRange,
-      restaurant: answer.restaurant,
-      restoPriceRange: answer.restoPriceRange,
-      isowner: answer.isowner,
-    });
   };
 
   const modifyUser = async (
@@ -241,28 +230,6 @@ export const useJourney = () => {
       restaurant: restaurant,
     };
   };
-  const fetchAnswersByJourneyId = async ({
-    journeyId,
-  }: {
-    journeyId: string;
-  }): Promise<Answer[] | undefined> => {
-    try {
-      const answersColRef = collection(db, DataBaseCollections.reponses);
-      const q = query(answersColRef, where("sortieId", "==", journeyId));
-      const querySnapshot = await getDocs(q);
-
-      const answers: Answer[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data() as Answer;
-        answers.push(data);
-      });
-
-      return answers;
-    } catch (error) {
-      console.error("Erreur lors du fetch des réponses:", error);
-      return undefined;
-    }
-  };
 
   const deleteJourney = async ({ journeyId }: { journeyId: string }) => {
     try {
@@ -293,12 +260,46 @@ export const useJourney = () => {
       throw error;
     }
   };
+
+  type CompleteData = {
+    isFullDay: boolean;
+    activity1Id: string;
+    activity2Id: string | null;
+    restaurantId: string | null;
+  };
+  type Props = {
+    journeyId: string;
+    completeData: CompleteData;
+  };
+  const completeJourney = async ({ journeyId, completeData }: Props) => {
+    if (!db) throw new Error("Firestore is not initialized");
+    const sortiesCollectionRef = collection(db, DataBaseCollections.sorties);
+    const sortieRef = doc(sortiesCollectionRef, journeyId);
+
+    const newFields = completeData.isFullDay
+      ? {
+          ACT_ID1: completeData.activity1Id,
+          ACT_ID2: completeData.activity2Id,
+          RES_ID: completeData.restaurantId,
+        }
+      : {
+          ACT_ID1: completeData.activity1Id,
+          RES_ID: completeData.restaurantId,
+        };
+
+    try {
+      await updateDoc(sortieRef, newFields);
+    } catch (error) {
+      console.error("Error updating sortie:", error);
+      throw error;
+    }
+  };
   return {
     createJourney,
     fetchJourneysByUser,
     fetchJourneyById,
     searchRestaurantsByTypes,
-    fetchAnswersByJourneyId,
     deleteJourney,
+    completeJourney,
   };
 };

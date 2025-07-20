@@ -58,7 +58,7 @@ const steps: Step[] = [
   },
 ];
 
-const handleSubmit = async (answers: CreateJourneyAnswers) => {
+const handleSubmit = async () => {
   if (!formAnswers.value) return;
   try {
     const journey = await createJourney(formAnswers.value);
@@ -110,7 +110,7 @@ const handleSubmit = async (answers: CreateJourneyAnswers) => {
               />
               <Button
                 v-if="i === steps.length - 1"
-                @click="handleSubmit(formAnswers)"
+                @click="handleSubmit()"
                 :label="
                   formAnswers.journeyIsFullDay
                     ? 'Génère ton incroyable journée !'

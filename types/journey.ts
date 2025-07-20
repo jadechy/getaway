@@ -8,9 +8,9 @@ export type BaseJourney = {
   id: string;
   title: string;
   type: ActivityType;
-  date: string;
-  timeStart: string;
-  timeFinish: string;
+  date: Date;
+  timeStart: Date;
+  timeFinish: Date;
   isFullDay: boolean;
   ownerId: string;
   needPMR: boolean;

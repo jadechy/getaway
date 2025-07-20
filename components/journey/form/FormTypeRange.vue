@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { ACTIVITY_TYPES_LIST } from "~/data/activityTypes";
 import { RESTAURANT_TYPES_LIST } from "~/data/restaurantTypes";
-import type { TypedPriceRange } from "~/types/answer";
+import type { CreateJourneyAnswers } from "~/types/answer";
 export type Typed = Record<string, string>;
-const form = defineModel<TypedPriceRange>({ required: true });
+const form = defineModel<CreateJourneyAnswers>({ required: true });
 const { isActivity } = defineProps<{ isActivity?: boolean }>();
-const typesList = Object.entries(
-  isActivity ? ACTIVITY_TYPES_LIST : RESTAURANT_TYPES_LIST
-).map(([id, label]) => ({
-  id,
-  label,
-}));
+const typesList = isActivity ? ACTIVITY_TYPES_LIST : RESTAURANT_TYPES_LIST;
 </script>
 
 <template>
@@ -19,18 +14,24 @@ const typesList = Object.entries(
       <label for="price"
         >Prix {{ isActivity ? "de l'activité" : "du restaurant" }}</label
       >
-      <p v-if="form.priceRange">
-        {{ form.priceRange[0] }} - {{ form.priceRange[1] }} €
+      <p v-if="form[isActivity ? 'activity' : 'restaurant'].priceRange">
+        {{ form[isActivity ? "activity" : "restaurant"].priceRange[0] }} -
+        {{ form[isActivity ? "activity" : "restaurant"].priceRange[1] }} €
       </p>
     </div>
-    <Slider id="price" v-model="form.priceRange" range :max="100" :min="0" />
+    <Slider
+      id="price"
+      v-model="form[isActivity ? 'activity' : 'restaurant'].priceRange"
+      range
+      :max="100"
+      :min="0"
+    />
   </div>
   <div class="type-form">
     <p>Type {{ isActivity ? "d'activité" : "de restaurant" }}</p>
     <Listbox
-      v-model="form.types"
+      v-model="form[isActivity ? 'activity' : 'restaurant'].types"
       :options="typesList"
-      optionLabel="label"
       class="type-form-listbox"
       multiple
       filter
