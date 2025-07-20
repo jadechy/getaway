@@ -21,8 +21,8 @@ const { user } = storeToRefs(useUserStore());
       </div>
 
       <nav class="desktop-nav">
-        <RouterLink to="/journey/generate">Nouvelle sortie</RouterLink>
-        <RouterLink to="/journey/generate">Résultat</RouterLink>
+        <RouterLink :to="{ path: '/journey/generate', query: { fromNav: 'true' } }">Nouvelle sortie</RouterLink>
+        <RouterLink :to="{ path: '/journey/generate', query: { fromNav: 'true' } }">Résultat</RouterLink>
         <Logo class="logo" @click="router.push('/')" />
         <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
         <RouterLink to="/profil">Profil</RouterLink>

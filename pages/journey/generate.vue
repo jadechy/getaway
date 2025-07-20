@@ -5,6 +5,7 @@ import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
 import FormTypeRange from "~/components/journey/form/FormTypeRange.vue";
 import FormIntro from "~/components/journey/form/FormIntro.vue";
+import { FormChooseType } from "#components";
 
 const { createJourney } = useJourney();
 
@@ -40,6 +41,8 @@ const formAnswers = ref<CreateJourneyAnswers>({
   },
 });
 
+const showChooseTypeStep = computed(() => route.query.fromNav === 'true');
+
 onMounted(async () => {
   if (!user.value) return;
   formAnswers.value.userId = user.value.uid;
@@ -49,14 +52,19 @@ type Step = {
   label: string;
   component: Component;
 };
-const steps: Step[] = [
-  { label: "Info générale", component: FormIntro },
-  { label: "Activité", component: FormTypeRange },
-  {
-    label: "Restaurant",
-    component: FormTypeRange,
-  },
-];
+const steps = computed(() => {
+  const baseSteps = [
+    { label: "Info générale", component: FormIntro },
+    { label: "Activité", component: FormTypeRange },
+    { label: "Restaurant", component: FormTypeRange },
+  ];
+
+  if (showChooseTypeStep.value) {
+    return [{ label: "Choisir type", component: FormChooseType }, ...baseSteps];
+  } else {
+    return baseSteps;
+  }
+});
 
 const handleSubmit = async (answers: CreateJourneyAnswers) => {
   if (!formAnswers.value) return;
