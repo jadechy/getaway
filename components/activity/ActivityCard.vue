@@ -1,16 +1,16 @@
 <script setup lang="ts">
-  defineProps<{
-    activity: {
-      title: string;
-      description: string;
-      cover_url: string;
-      cover_alt: string;
-      address_street: string;
-      address_zipcode: string;
-      address_city: string;
-      url: string;
-    };
-  }>();
+defineProps<{
+  activity: {
+    title: string;
+    description: string;
+    cover_url: string;
+    cover_alt: string;
+    address_street: string;
+    address_zipcode: string;
+    address_city: string;
+    url: string;
+  };
+}>();
 </script>
 
 <template>
@@ -26,9 +26,7 @@
     <template #title>{{ activity.title }}</template>
 
     <template #content>
-      <div class="activity-desc">
-        <p>{{ activity.description }}</p>
-      </div>
+      <div class="activity-desc" v-html="activity.description"></div>
     </template>
     <template #footer>
       <p class="activity-address">
@@ -36,13 +34,6 @@
         {{ activity.address_city }}
       </p>
     </template>
-
-    <!-- <Button
-      label="En savoir plus"
-      icon="pi pi-external-link"
-      class="p-button-text p-button-sm"
-      @click="window.open(activity.url, '_blank')"
-    /> -->
   </Card>
 </template>
 
