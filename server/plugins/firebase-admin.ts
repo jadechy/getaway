@@ -1,12 +1,14 @@
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 
 export default defineNitroPlugin(() => {
+  const config = useRuntimeConfig();
+
   if (!getApps().length) {
     initializeApp({
       credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+        projectId: config.FIREBASE_PROJECT_ID,
+        clientEmail: config.FIREBASE_CLIENT_EMAIL,
+        privateKey: config.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
   }
