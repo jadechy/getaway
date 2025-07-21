@@ -29,7 +29,7 @@ const { user } = storeToRefs(useUserStore());
           :to="{ path: '/journey/generate', query: { fromNav: 'true' } }"
           >Résultat</RouterLink
         >
-        <Logo class="logo" @click="router.push('/')" />
+        <Logo class="logo" @click="router.push('/home')" />
         <RouterLink to="/journey/all">Sorties enregistrées</RouterLink>
         <RouterLink to="/profile">Profil</RouterLink>
       </nav>

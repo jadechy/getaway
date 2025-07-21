@@ -12,11 +12,10 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const router = useRouter();
 const route = useRoute();
-const rawType = route.query.formType as string;
+const rawType = route.query.type as string;
 const isValidActivityType = Object.values(ActivityType).includes(
   rawType as ActivityType
 );
-
 const formAnswers = ref<CreateJourneyAnswers>({
   userId: "",
   journeyName: "",
@@ -39,8 +38,6 @@ const formAnswers = ref<CreateJourneyAnswers>({
   },
 });
 
-const showChooseTypeStep = computed(() => route.query.fromNav === "true");
-
 onMounted(async () => {
   if (!user.value) return;
   formAnswers.value.userId = user.value.uid;
@@ -56,8 +53,7 @@ const steps = computed(() => {
     { label: "Activité", component: FormTypeRange },
     { label: "Restaurant", component: FormTypeRange },
   ];
-
-  if (showChooseTypeStep.value) {
+  if (!isValidActivityType) {
     baseSteps = [
       { label: "Type de sortie", component: FormChooseType },
       ...baseSteps,

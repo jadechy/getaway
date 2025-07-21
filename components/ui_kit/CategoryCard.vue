@@ -15,11 +15,10 @@ const props = defineProps<{
 const router = useRouter();
 
 const color = computed<IconAndColor>(() => getIconAndColor(props.activityType));
-
 const onClick = () => {
   router.push({
     name: `journey-generate`,
-    params: { formType: props.activityType },
+    query: { type: props.activityType },
   });
 };
 </script>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+import DOMPurify from "dompurify";
+
+const { activity } = defineProps<{
   activity: {
     title: string;
     description: string;
@@ -11,6 +13,9 @@ defineProps<{
     url: string;
   };
 }>();
+const sanitizedDescription = computed(() => {
+  return DOMPurify.sanitize(activity.description);
+});
 </script>
 
 <template>
@@ -26,7 +31,7 @@ defineProps<{
     <template #title>{{ activity.title }}</template>
 
     <template #content>
-      <div class="activity-desc" v-html="activity.description"></div>
+      <div class="activity-desc" v-html="sanitizedDescription"></div>
     </template>
     <template #footer>
       <p class="activity-address">
@@ -40,10 +45,11 @@ defineProps<{
 <style scoped>
 .activity-image {
   width: 100%;
-  /* border-radius: 6px; */
   object-fit: cover;
-  /*margin-bottom: 1rem;
-  height: 220px; */
+}
+.activity-desc {
+  max-height: 8rem;
+  overflow: hidden;
 }
 .activity-desc * {
   margin-block: 0.5rem;

@@ -80,12 +80,7 @@ export const useActivity = () => {
       `https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/que-faire-a-paris-/records?${queryParams}`
     );
 
-    if (!response.ok) throw new Error("Aucune activité trouvée");
-
     const data = await response.json();
-
-    if (!data.results || data.results.length === 0)
-      throw new Error("Aucune activité trouvée");
 
     return data.results as ActivityApiType[];
   };

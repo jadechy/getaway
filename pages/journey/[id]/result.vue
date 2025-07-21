@@ -27,6 +27,7 @@ onMounted(async () => {
   try {
     journey.value = await fetchJourneyById({ journeyId });
     const answers = await fetchAnswersByJourneyId({ journeyId });
+    console.log(answers);
     if (!answers || !journey.value) return;
 
     activityList.value = await findActivityFromAnswers(answers, journey.value);
@@ -36,6 +37,7 @@ onMounted(async () => {
 
     const priceList = answers.map((a) => a.restoPriceRange[1]);
     const minPrice = Math.min(...priceList);
+    console.log(allAnswersType, journey.value.type);
     restaurantsList.value = await searchRestaurantsByTypes(
       allAnswersType,
       journey.value.type,
@@ -111,15 +113,21 @@ const handleSave = async () => {
 
     <article id="restaurant">
       <h2>Le restaurant</h2>
-      <RestaurantDisplay :restaurant="restaurantsList[restaurant]" />
+      <RestaurantDisplay
+        v-if="restaurantsList[restaurant]"
+        :restaurant="restaurantsList[restaurant]"
+      />
     </article>
 
     <article v-if="activityList" id="activities">
       <h2>Les activités</h2>
       <div>
-        <ActivityCard :activity="activityList[activity1]" />
         <ActivityCard
-          v-if="journey?.isFullDay"
+          v-if="activityList[activity1]"
+          :activity="activityList[activity1]"
+        />
+        <ActivityCard
+          v-if="journey?.isFullDay && activityList[activity2]"
           :activity="activityList[activity2]"
         />
       </div>
