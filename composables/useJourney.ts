@@ -139,9 +139,7 @@ export const useJourney = () => {
           where(journeyTypeQueryParam(sortieType), "==", true)
         );
       }
-
       const querySnapshot = await getDocs(q);
-
       const matchingRestaurants = querySnapshot.docs
         .map((doc) => {
           const data = doc.data();
@@ -159,7 +157,6 @@ export const useJourney = () => {
           } as Restaurant;
         })
         .filter((restaurant) => restaurant.prix_max <= prixMax);
-
       return matchingRestaurants;
     } catch (error) {
       console.error("Erreur lors de la recherche des restaurants :", error);

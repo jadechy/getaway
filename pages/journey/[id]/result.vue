@@ -43,6 +43,8 @@ onMounted(async () => {
       journey.value.type,
       minPrice
     );
+    console.log(restaurantsList.value[2].title);
+    console.log(restaurant.value);
   } catch (e) {
     console.error(e);
   }

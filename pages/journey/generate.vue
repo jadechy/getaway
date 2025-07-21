@@ -37,6 +37,7 @@ const formAnswers = ref<CreateJourneyAnswers>({
     priceRange: [0, 100],
   },
 });
+const steps = ref<Step[]>([]);
 
 onMounted(async () => {
   if (!user.value) return;
@@ -47,20 +48,20 @@ type Step = {
   label: string;
   component: Component;
 };
-const steps = computed(() => {
-  let baseSteps: Step[] = [
-    { label: "Info générale", component: FormIntro },
-    { label: "Activité", component: FormTypeRange },
-    { label: "Restaurant", component: FormTypeRange },
-  ];
+onMounted(() => {
+  let baseSteps: Step[] = [{ label: "Info générale", component: FormIntro }];
+  if (rawType !== ActivityType.random) {
+    baseSteps.push({ label: "Activité", component: FormTypeRange }),
+      baseSteps.push({ label: "Restaurant", component: FormTypeRange });
+  }
   if (!isValidActivityType) {
-    baseSteps = [
+    steps.value = [
       { label: "Type de sortie", component: FormChooseType },
       ...baseSteps,
     ];
+  } else {
+    steps.value = baseSteps;
   }
-
-  return baseSteps;
 });
 
 const handleSubmit = async () => {
@@ -72,6 +73,27 @@ const handleSubmit = async () => {
     console.error("Erreur lors de la création :", e);
   }
 };
+watch(
+  () => formAnswers.value.journeyActivityType,
+  (newType) => {
+    console.log(newType);
+    if (!newType || newType === ActivityType.random) return;
+
+    // Vérifie s’il manque déjà les steps
+    const hasActivity = steps.value.some((step) => step.label === "Activité");
+    const hasRestaurant = steps.value.some(
+      (step) => step.label === "Restaurant"
+    );
+
+    if (!hasActivity) {
+      steps.value.push({ label: "Activité", component: FormTypeRange });
+    }
+
+    if (!hasRestaurant) {
+      steps.value.push({ label: "Restaurant", component: FormTypeRange });
+    }
+  }
+);
 </script>
 
 <template>
