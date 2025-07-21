@@ -46,24 +46,24 @@ onMounted(async () => {
   }
 });
 
-function shuffleAct1() {
+const shuffleAct1 = () => {
   activity1.value = (activity1.value + 1) % (activityList.value?.length || 1);
-}
+};
 
-function shuffleAct2() {
+const shuffleAct2 = () => {
   activity2.value = activity2.value > 0 ? activity2.value - 1 : 29;
-}
+};
 
-function shuffleRest() {
+const shuffleRest = () => {
   restaurant.value =
     (restaurant.value + 1) % (restaurantsList.value?.length || 1);
-}
+};
 
-async function handleRegenerate() {
+const handleRegenerate = async () => {
   shuffleAct1();
   shuffleAct2();
   shuffleRest();
-}
+};
 
 const handleSave = async () => {
   const activity1Id = activityList.value?.[activity1.value]?.id;
@@ -76,7 +76,6 @@ const handleSave = async () => {
     !activity2Id ||
     !restaurantId
   ) {
-    // TODO: Afficher un message d’erreur utilisateur
     console.warn("Certaines données sont manquantes :");
     console.warn({ activity1Id, activity2Id, restaurantId });
     return;

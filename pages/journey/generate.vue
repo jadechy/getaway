@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, type Component } from "vue";
 import type { CreateJourneyAnswers } from "~/types/answer";
 import { useJourney } from "~/composables/useJourney";
 import { ActivityType } from "~/types/journey";
