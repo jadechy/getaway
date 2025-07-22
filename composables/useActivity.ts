@@ -44,7 +44,7 @@ export const useActivity = () => {
           .join(" OR ")
       : "";
     const publicFilter = journeyTypePublicFilterValues(baseJourney.type)
-      .map((tag) => `qfap_tags LIKE '%${tag}%'`)
+      .map((tag) => `audience LIKE '%${tag}%'`)
       .join(" OR ");
 
     const whereQuery = [needPmr, isFree, tagFilter, publicFilter]

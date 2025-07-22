@@ -14,7 +14,9 @@ export const mapRawJourneyToJourney = (raw: JourneyFromDB): Journey => {
     isFullDay: raw.SOR_JOURNEE,
     ownerId: raw.UTIL_ID,
     needPMR: raw.SOR_PMR,
-    activitiesId: [raw.ACT_ID1, raw.ACT_ID2].filter((id): id is number => typeof id === 'number'),
+    activitiesId: [raw.ACT_ID1, raw.ACT_ID2].filter(
+      (id): id is number => typeof id === "number"
+    ),
     restaurantId: raw.RES_ID,
   };
 };
